@@ -23,53 +23,46 @@
             margin-bottom: 20px;
         }
         .palette-row {
-            overflow-x: auto;
             display: flex;
-            gap: 20px;
-            padding: 10px;
-            scroll-snap-type: x mandatory;
-            white-space: nowrap;
             flex-direction: column;
+            gap: 20px;
             align-items: center;
+            margin-bottom: 20px;
         }
         .palette {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             gap: 15px;
             padding: 20px;
             border-radius: 10px;
             background: #fff;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            min-width: 80%;
-            max-width: 350px;
-            scroll-snap-align: center;
-            flex-direction: column;
+            width: 90%;
+            max-width: 600px;
         }
         .swatch-container {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
             justify-content: center;
         }
         .swatch {
-            width: 20vw;
-            height: 20vw;
-            max-width: 120px;
-            max-height: 120px;
+            width: 100px;
+            height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: clamp(12px, 3vw, 16px);
+            font-size: 14px;
             border-radius: 6px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25); /* Increased shadow */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
         }
         .swatch:hover {
             transform: scale(1.1);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35); /* Stronger shadow on hover */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
         }
         .title {
             font-size: clamp(16px, 4vw, 18px);
@@ -77,14 +70,32 @@
             margin-bottom: 10px;
             color: #444;
         }
+        .vote-section {
+            margin-top: 10px;
+        }
+        .vote-button {
+            background-color: #004D40;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .vote-button:hover {
+            background-color: #028A0F;
+        }
+        .vote-count {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #333;
+        }
         @media (max-width: 600px) {
-            .palette {
-                gap: 10px;
-                padding: 15px;
-            }
             .swatch {
-                width: 25vw;
-                height: 25vw;
+                width: 80px;
+                height: 80px;
+                font-size: 12px;
             }
         }
     </style>
@@ -93,6 +104,7 @@
     <h1>The Bafanas Stokvel</h1>
     <p class="subtitle">Secure Tomorrow, Invest Today!</p>
     
+    <!-- First Palette -->
     <div class="palette-row">
         <div class="palette">
             <div class="title">🌿 Classic Corporate Palette</div>
@@ -103,9 +115,14 @@
                 <div class="swatch" style="background-color: #2C2C2C;">#2C2C2C</div>
                 <div class="swatch" style="background-color: #F5F5F5; color: black;">#F5F5F5</div>
             </div>
+            <div class="vote-section">
+                <button class="vote-button" onclick="vote('classic')">Vote for this Palette</button>
+                <div class="vote-count" id="classic-votes">Votes: 0</div>
+            </div>
         </div>
     </div>
 
+    <!-- Second Palette -->
     <div class="palette-row">
         <div class="palette">
             <div class="title">✨ Modern &amp; Sleek Palette</div>
@@ -116,9 +133,14 @@
                 <div class="swatch" style="background-color: #1C1C1C;">#1C1C1C</div>
                 <div class="swatch" style="background-color: #FAFAFA; color: black;">#FAFAFA</div>
             </div>
+            <div class="vote-section">
+                <button class="vote-button" onclick="vote('modern')">Vote for this Palette</button>
+                <div class="vote-count" id="modern-votes">Votes: 0</div>
+            </div>
         </div>
     </div>
 
+    <!-- Third Palette -->
     <div class="palette-row">
         <div class="palette">
             <div class="title">🚀 Futuristic Finance Palette</div>
@@ -129,7 +151,37 @@
                 <div class="swatch" style="background-color: #BFC5C5; color: black;">#BFC5C5</div>
                 <div class="swatch" style="background-color: #FFFFFF; color: black; border: 1px solid #ccc;">#FFFFFF</div>
             </div>
+            <div class="vote-section">
+                <button class="vote-button" onclick="vote('futuristic')">Vote for this Palette</button>
+                <div class="vote-count" id="futuristic-votes">Votes: 0</div>
+            </div>
         </div>
     </div>
+
+    <script>
+        // Initialize vote counts from localStorage or set to 0
+        let votes = {
+            classic: parseInt(localStorage.getItem('classic-votes')) || 0,
+            modern: parseInt(localStorage.getItem('modern-votes')) || 0,
+            futuristic: parseInt(localStorage.getItem('futuristic-votes')) || 0
+        };
+
+        // Function to update vote counts
+        function updateVotes() {
+            document.getElementById('classic-votes').textContent = `Votes: ${votes.classic}`;
+            document.getElementById('modern-votes').textContent = `Votes: ${votes.modern}`;
+            document.getElementById('futuristic-votes').textContent = `Votes: ${votes.futuristic}`;
+        }
+
+        // Function to handle voting
+        function vote(palette) {
+            votes[palette]++;
+            localStorage.setItem(`${palette}-votes`, votes[palette]);
+            updateVotes();
+        }
+
+        // Display initial vote counts
+        updateVotes();
+    </script>
 </body>
 </html>
