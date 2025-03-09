@@ -23,50 +23,53 @@
             margin-bottom: 20px;
         }
         .palette-row {
+            overflow-x: auto;
             display: flex;
-            flex-direction: column;
             gap: 20px;
+            padding: 10px;
+            scroll-snap-type: x mandatory;
+            white-space: nowrap;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 20px;
         }
         .palette {
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             gap: 15px;
             padding: 20px;
             border-radius: 10px;
             background: #fff;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 600px;
+            min-width: 80%;
+            max-width: 350px;
+            scroll-snap-align: center;
+            flex-direction: column;
         }
         .swatch-container {
             display: flex;
-            gap: 15px;
-            overflow-x: auto; /* Enable horizontal scrolling */
-            padding-bottom: 10px; /* Space for scrollbar */
-            width: 100%;
-            scroll-snap-type: x mandatory; /* Smooth snapping for scrolling */
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .swatch {
-            flex: 0 0 auto; /* Prevent swatches from shrinking */
-            width: 100px;
-            height: 100px;
+            width: 20vw;
+            height: 20vw;
+            max-width: 120px;
+            max-height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 14px;
+            font-size: clamp(12px, 3vw, 16px);
             border-radius: 6px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
-            scroll-snap-align: start; /* Snap to the start of each swatch */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25); /* Increased shadow */
         }
         .swatch:hover {
             transform: scale(1.1);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35); /* Stronger shadow on hover */
         }
         .title {
             font-size: clamp(16px, 4vw, 18px);
@@ -75,19 +78,21 @@
             color: #444;
         }
         @media (max-width: 600px) {
+            .palette {
+                gap: 10px;
+                padding: 15px;
+            }
             .swatch {
-                width: 80px;
-                height: 80px;
-                font-size: 12px;
+                width: 25vw;
+                height: 25vw;
             }
         }
     </style>
 </head>
 <body>
     <h1>The Bafanas Stokvel</h1>
-    <p class="subtitle">Secure Tomorrow, Invest Today</p>
+    <p class="subtitle">Secure Tomorrow, Invest Today!</p>
     
-    <!-- First Palette -->
     <div class="palette-row">
         <div class="palette">
             <div class="title">🌿 Classic Corporate Palette</div>
@@ -101,10 +106,9 @@
         </div>
     </div>
 
-    <!-- Second Palette -->
     <div class="palette-row">
         <div class="palette">
-            <div class="title">✨ Modern & Sleek Palette</div>
+            <div class="title">✨ Modern &amp; Sleek Palette</div>
             <div class="swatch-container">
                 <div class="swatch" style="background-color: #004D40;">#004D40</div>
                 <div class="swatch" style="background-color: #4B4B4B;">#4B4B4B</div>
@@ -115,7 +119,6 @@
         </div>
     </div>
 
-    <!-- Third Palette -->
     <div class="palette-row">
         <div class="palette">
             <div class="title">🚀 Futuristic Finance Palette</div>
