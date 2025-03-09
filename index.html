@@ -13,12 +13,12 @@
             overflow-x: hidden;
         }
         h1 {
-            font-size: 28px;
+            font-size: clamp(24px, 6vw, 32px); /* Responsive font size */
             color: #333;
             margin-bottom: 10px;
         }
         .subtitle {
-            font-size: 16px;
+            font-size: clamp(14px, 4vw, 16px); /* Responsive font size */
             color: #666;
             margin-bottom: 20px;
         }
@@ -37,28 +37,32 @@
             justify-content: center;
             align-items: center;
             gap: 15px;
-            padding: 25px;
+            padding: 20px;
             border-radius: 10px;
             background: #fff;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            min-width: 350px;
-            flex-wrap: nowrap;
+            min-width: 80%; /* More flexible width */
+            max-width: 350px; /* Limit maximum width */
             scroll-snap-align: center;
             flex-direction: column;
         }
         .swatch-container {
             display: flex;
-            gap: 15px;
+            gap: 10px;
+            flex-wrap: wrap; /* Allow swatches to wrap on smaller screens */
+            justify-content: center;
         }
         .swatch {
-            width: 120px;
-            height: 120px;
+            width: 20vw; /* Responsive width */
+            height: 20vw; /* Responsive height */
+            max-width: 120px; /* Limit maximum size */
+            max-height: 120px; /* Limit maximum size */
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 16px;
+            font-size: clamp(12px, 3vw, 16px); /* Responsive font size */
             border-radius: 6px;
             transition: transform 0.3s ease;
         }
@@ -66,27 +70,26 @@
             transform: scale(1.1);
         }
         .title {
-            font-size: 18px;
+            font-size: clamp(16px, 4vw, 18px); /* Responsive font size */
             font-weight: bold;
             margin-bottom: 10px;
             color: #444;
         }
         @media (max-width: 600px) {
-            .swatch {
-                width: 90px;
-                height: 90px;
-                font-size: 14px;
-            }
             .palette {
                 gap: 10px;
-                padding: 20px;
+                padding: 15px;
+            }
+            .swatch {
+                width: 25vw; /* Larger swatches on smaller screens */
+                height: 25vw;
             }
         }
     </style>
 </head>
 <body>
     <h1>The Bafanas Color Palettes</h1>
-    <p class="subtitle">A selection of sophisticated color schemes to represent strength, stability, and success.</p>
+    <p class="subtitle">Secure Tomorrow, Invest Today.</p>
     
     <div class="palette-row">
         <div class="palette">
@@ -103,7 +106,7 @@
 
     <div class="palette-row">
         <div class="palette">
-            <div class="title">✨ Modern & Sleek Palette</div>
+            <div class="title">✨ Modern &amp; Sleek Palette</div>
             <div class="swatch-container">
                 <div class="swatch" style="background-color: #004D40;">#004D40</div>
                 <div class="swatch" style="background-color: #4B4B4B;">#4B4B4B</div>
