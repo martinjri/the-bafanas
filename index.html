@@ -1,187 +1,1652 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Bafanas Stokvel</title>
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
-            padding: 20px;
-            overflow-x: hidden;
-        }
-        h1 {
-            font-size: clamp(24px, 6vw, 32px);
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            font-size: clamp(14px, 4vw, 16px);
-            color: #666;
-            margin-bottom: 20px;
-        }
-        .palette-row {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .palette {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            padding: 20px;
-            border-radius: 10px;
-            background: #fff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 600px;
-        }
-        .swatch-container {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .swatch {
-            width: 100px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            border-radius: 6px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
-        }
-        .swatch:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
-        }
-        .title {
-            font-size: clamp(16px, 4vw, 18px);
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #444;
-        }
-        .vote-section {
-            margin-top: 10px;
-        }
-        .vote-button {
-            background-color: #004D40;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-        .vote-button:hover {
-            background-color: #028A0F;
-        }
-        .vote-count {
-            margin-top: 10px;
-            font-size: 16px;
-            color: #333;
-        }
-        @media (max-width: 600px) {
-            .swatch {
-                width: 80px;
-                height: 80px;
-                font-size: 12px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>The Bafana's Stokvel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#C9A84C;--gold-l:#E8C97A;--gold-d:#8B6914;--gold-faint:rgba(201,168,76,.08);
+  --deep:#07090D;--s1:#0D1017;--s2:#131720;--s3:#191F2B;--s4:#1F2636;--s5:#252D3E;
+  --border:rgba(201,168,76,.13);--border2:rgba(201,168,76,.26);
+  --text:#EDE8DF;--text2:#9AA3B8;--text3:#5C6680;
+  --green:#22C55E;--green-bg:rgba(34,197,94,.1);
+  --red:#EF4444;--red-bg:rgba(239,68,68,.1);
+  --amber:#F59E0B;--amber-bg:rgba(245,158,11,.1);
+  --blue:#3B82F6;--blue-bg:rgba(59,130,246,.08);
+  --sw:232px;--bh:62px;--top:54px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--deep)}
+body{font-family:'DM Sans',sans-serif;color:var(--text);font-size:14px}
+button,input,select,textarea{font-family:'DM Sans',sans-serif}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:var(--s5);border-radius:3px}
+h1,h2,h3,.display{font-family:'Cormorant Garamond',serif}
+
+/* ═══════════════════════════════════
+   SCREENS
+═══════════════════════════════════ */
+.screen{position:fixed;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .4s}
+.screen.show{display:flex;opacity:1}
+
+/* ═══════════════════════════════════
+   SPLASH
+═══════════════════════════════════ */
+#scSplash{background:var(--deep);align-items:center;justify-content:center}
+.sp-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.sp-grid{position:absolute;inset:0;background-image:
+  linear-gradient(rgba(201,168,76,.025) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(201,168,76,.025) 1px,transparent 1px);
+  background-size:60px 60px}
+.sp-orb{position:absolute;border-radius:50%;pointer-events:none}
+.sp-orb1{width:560px;height:560px;top:-160px;right:-140px;background:radial-gradient(circle,rgba(139,105,20,.2) 0%,transparent 60%);animation:orbDrift 9s ease-in-out infinite}
+.sp-orb2{width:380px;height:380px;bottom:-100px;left:-100px;background:radial-gradient(circle,rgba(201,168,76,.08) 0%,transparent 60%);animation:orbDrift 12s ease-in-out infinite reverse}
+@keyframes orbDrift{0%,100%{transform:scale(1)}50%{transform:scale(1.12) translate(8px,-12px)}}
+.sp-body{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 28px}
+.sp-mark{width:80px;height:80px;border-radius:20px;background:linear-gradient(140deg,var(--gold-d),var(--gold));display:flex;align-items:center;justify-content:center;margin-bottom:24px;position:relative;animation:markIn .9s cubic-bezier(.34,1.56,.64,1) both}
+.sp-mark-text{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:var(--deep);line-height:1}
+@keyframes markIn{from{opacity:0;transform:scale(.5) rotate(-12deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+.sp-ring{position:absolute;border-radius:24px;border:1px solid rgba(201,168,76,.25);animation:ringBreath 3s ease-in-out infinite}
+.sp-ring1{inset:-9px;animation-delay:0s}
+.sp-ring2{inset:-18px;border-radius:30px;border-color:rgba(201,168,76,.1);animation-delay:.5s}
+@keyframes ringBreath{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.02)}}
+.sp-name{font-size:32px;font-weight:700;color:var(--gold);letter-spacing:.3px;margin-bottom:5px;animation:up .6s .4s ease both}
+.sp-sub{font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--text3);animation:up .6s .5s ease both;margin-bottom:4px}
+.sp-tag{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--text3);animation:up .6s .6s ease both;opacity:.8}
+.sp-rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:24px auto;animation:up .6s .7s ease both}
+.sp-pillars{display:flex;gap:28px;animation:up .6s .8s ease both}
+.sp-pillar{text-align:center}
+.sp-pillar-val{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px}
+.sp-pillar-lbl{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+.sp-loader{position:absolute;bottom:44px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:10px;animation:up .5s 1s ease both}
+.sp-track{width:100px;height:2px;background:var(--s4);border-radius:2px;overflow:hidden}
+.sp-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold));width:0;transition:width .04s linear}
+.sp-ltxt{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--text3)}
+.sp-foot{position:absolute;bottom:18px;font-size:9px;color:var(--text3);opacity:.4;letter-spacing:1.5px;text-transform:uppercase}
+
+/* ═══════════════════════════════════
+   LOGIN
+═══════════════════════════════════ */
+#scLogin{background:var(--deep);align-items:center;justify-content:center;overflow-y:auto}
+.lg-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.lg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.022) 1px,transparent 1px);background-size:52px 52px}
+.lg-glow{position:absolute;width:500px;height:500px;border-radius:50%;top:-120px;right:-120px;background:radial-gradient(circle,rgba(139,105,20,.16) 0%,transparent 65%);animation:orbDrift 8s ease-in-out infinite}
+.lg-wrap{position:relative;z-index:1;width:100%;max-width:400px;padding:24px 20px;margin:auto}
+.lg-brand{text-align:center;margin-bottom:28px}
+.lg-emblem{width:52px;height:52px;border-radius:13px;background:linear-gradient(135deg,var(--gold-d),var(--gold));display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--deep);animation:markIn .7s ease both}
+.lg-title{font-size:24px;font-weight:700;color:var(--gold);animation:up .5s .2s ease both}
+.lg-tag{font-size:10px;text-transform:uppercase;letter-spacing:2.5px;color:var(--text3);margin-top:3px;animation:up .5s .3s ease both}
+.lg-card{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:24px;animation:up .5s .35s ease both;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.lg-card-title{font-size:18px;font-weight:700;margin-bottom:3px}
+.lg-card-sub{font-size:11px;color:var(--text3);margin-bottom:20px}
+.demo-box{background:rgba(201,168,76,.05);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:16px}
+.demo-box strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin-bottom:6px;font-weight:600}
+.ql{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--s2);border:1px solid var(--border);border-radius:9px;margin-bottom:6px;cursor:pointer;transition:all .15s;text-align:left;width:100%}
+.ql:last-child{margin-bottom:0}
+.ql:hover{background:var(--s3);border-color:var(--border2)}
+.ql-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.ql-name{font-size:12px;font-weight:600;flex:1}
+.ql-role{font-size:10px;color:var(--text3)}
+.or-line{display:flex;align-items:center;gap:10px;margin:14px 0;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3)}
+.or-line::before,.or-line::after{content:'';flex:1;height:1px;background:var(--border)}
+.fl{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);margin-bottom:5px;display:block;font-weight:600}
+.fi{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 13px;color:var(--text);font-size:13px;outline:none;transition:border-color .15s}
+.fi:focus{border-color:var(--gold)}
+.fi::placeholder{color:var(--text3)}
+select.fi{appearance:none;cursor:pointer}
+textarea.fi{resize:vertical;min-height:72px}
+.fg{margin-bottom:12px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lg-forgot{font-size:11px;color:var(--gold);cursor:pointer;text-align:right;margin-top:-6px;margin-bottom:12px;display:block}
+.btn-primary{width:100%;padding:12px;background:linear-gradient(135deg,var(--gold-d),var(--gold));color:var(--deep);font-size:12px;font-weight:700;border:none;border-radius:9px;text-transform:uppercase;letter-spacing:.6px;cursor:pointer;transition:all .2s}
+.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.lg-foot{text-align:center;margin-top:16px;font-size:10px;color:var(--text3);animation:up .5s .5s ease both}
+
+/* ═══════════════════════════════════
+   APP LAYOUT
+═══════════════════════════════════ */
+#scApp{flex-direction:row}
+.sb{width:var(--sw);background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;flex-shrink:0}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-logo-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--gold)}
+.sb-logo-tag{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-top:1px}
+.sb-nav{flex:1;padding:10px 7px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.sb-sec{font-size:8px;text-transform:uppercase;letter-spacing:2px;color:var(--text3);padding:10px 10px 3px;opacity:.5}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;color:var(--text2);transition:all .12s;text-transform:uppercase;letter-spacing:.3px;border:none;background:none;width:100%;text-align:left;position:relative}
+.sb-item:hover{background:var(--s2);color:var(--text)}
+.sb-item.on{background:rgba(201,168,76,.1);color:var(--gold)}
+.sb-icon{font-size:13px;width:16px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;background:var(--gold);color:var(--deep);font-size:8px;font-weight:800;padding:1px 5px;border-radius:20px;min-width:15px;text-align:center}
+.sb-user{padding:10px 8px;border-top:1px solid var(--border);flex-shrink:0}
+.sb-chip{display:flex;align-items:center;gap:9px;padding:8px 10px;background:var(--s2);border-radius:8px;cursor:pointer;border:1px solid var(--border);transition:all .12s}
+.sb-chip:hover{background:var(--s3)}
+.sb-chip-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0}
+.sb-chip-name{font-size:11px;font-weight:600;flex:1;line-height:1.2}
+.sb-chip-role{font-size:9px;color:var(--text3)}
+.sb-chip-out{font-size:13px;color:var(--text3)}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh}
+.topbar{background:var(--s1);border-bottom:1px solid var(--border);padding:0 18px;height:var(--top);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tb-l{display:flex;align-items:center;gap:10px}
+.tb-ham{display:none;width:32px;height:32px;background:var(--s2);border:1px solid var(--border);border-radius:7px;align-items:center;justify-content:center;cursor:pointer;font-size:15px;border:none;color:var(--text)}
+.tb-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700}
+.tb-r{display:flex;align-items:center;gap:7px}
+.tb-ico{width:32px;height:32px;background:var(--s2);border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;position:relative;transition:all .12s;flex-shrink:0}
+.tb-ico:hover{background:var(--s3)}
+.tb-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;background:var(--gold);border-radius:50%;border:2px solid var(--s1)}
+.tb-cta{padding:6px 13px;background:linear-gradient(135deg,var(--gold-d),var(--gold));color:var(--deep);font-size:10px;font-weight:700;border:none;border-radius:7px;letter-spacing:.4px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:filter .15s;flex-shrink:0}
+.tb-cta:hover{filter:brightness(1.1)}
+.content{flex:1;overflow-y:auto;padding:18px;-webkit-overflow-scrolling:touch}
+.bn{display:none;background:var(--s1);border-top:1px solid var(--border);height:var(--bh);flex-shrink:0}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--text3);font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;transition:color .12s;position:relative;border:none;background:none;padding:0}
+.bn-item.on{color:var(--gold)}
+.bn-icon{font-size:16px;line-height:1}
+.bn-badge{position:absolute;top:4px;right:calc(50% - 16px);background:var(--gold);color:var(--deep);font-size:7px;font-weight:800;padding:1px 4px;border-radius:10px;min-width:13px;text-align:center}
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:90;backdrop-filter:blur(4px)}
+.sb-ov.show{display:block}
+.sb.mob-open{display:flex!important;position:fixed;top:0;left:0;bottom:0;z-index:100;animation:slideIn .22s ease}
+@keyframes slideIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+
+/* ═══════════════════════════════════
+   SECTIONS
+═══════════════════════════════════ */
+.section{display:none}.section.on{display:block}
+@keyframes up{from{opacity:0;transform:translateY(11px)}to{opacity:1;transform:translateY(0)}}
+.section.on .card{animation:up .3s ease both}
+.section.on .stat-card:nth-child(2){animation-delay:.04s}
+.section.on .stat-card:nth-child(3){animation-delay:.08s}
+.section.on .stat-card:nth-child(4){animation-delay:.12s}
+
+/* ═══════════════════════════════════
+   COMPONENTS
+═══════════════════════════════════ */
+
+/* STAT CARDS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:14px}
+.stat-card{background:var(--s1);border:1px solid var(--border);border-radius:11px;padding:14px;position:relative;overflow:hidden;animation:up .3s ease both}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+.sc-lbl{font-size:8px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);margin-bottom:7px;font-weight:600}
+.sc-val{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;line-height:1;margin-bottom:4px}
+.sc-val small{font-size:13px;color:var(--gold);margin-right:1px}
+.sc-sub{font-size:10px;color:var(--text3)}
+.sc-sub.up{color:var(--green)}.sc-sub.dn{color:var(--red)}.sc-sub.warn{color:var(--amber)}
+
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:11px;padding:16px;margin-bottom:13px}
+.card-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:700}
+.card-act{font-size:9px;color:var(--gold);cursor:pointer;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:none;background:none;padding:4px 8px;border-radius:5px;transition:background .12s}
+.card-act:hover{background:rgba(201,168,76,.1)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;padding:7px 11px;font-size:8px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);border-bottom:1px solid var(--border);font-weight:600;white-space:nowrap}
+.tbl td{padding:10px 11px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr{cursor:pointer;transition:background .1s}
+.tbl tbody tr:hover td{background:var(--s2)}
+.mc{display:flex;align-items:center;gap:8px}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:13px}
+.search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);pointer-events:none}
+.search-input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:8px 11px 8px 32px;color:var(--text);font-size:12px;outline:none;transition:border-color .15s}
+.search-input:focus{border-color:var(--gold)}
+.search-input::placeholder{color:var(--text3)}
+
+/* BADGE */
+.badge{padding:2px 7px;border-radius:20px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;display:inline-block}
+.b-green{background:var(--green-bg);color:var(--green)}
+.b-gold{background:rgba(201,168,76,.14);color:var(--gold)}
+.b-red{background:var(--red-bg);color:var(--red)}
+.b-amber{background:var(--amber-bg);color:var(--amber)}
+.b-blue{background:var(--blue-bg);color:var(--blue)}
+.b-muted{background:rgba(92,100,120,.15);color:var(--text2)}
+
+/* PROGRESS */
+.pb-wrap{margin-bottom:11px}
+.pb-hd{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.pb-track{height:4px;background:var(--s4);border-radius:2px;overflow:hidden}
+.pb-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold-d),var(--gold));transition:width .7s ease}
+.pb-fill.red{background:linear-gradient(90deg,#991B1B,var(--red))}
+.pb-fill.full{background:linear-gradient(90deg,#166534,var(--green))}
+
+/* TIMELINE */
+.tl{display:flex;flex-direction:column}
+.tl-item{display:flex;gap:11px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.035)}
+.tl-item:last-child{border-bottom:none}
+.tl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.tl-dot.g{background:var(--gold)}.tl-dot.r{background:var(--red)}.tl-dot.d{background:var(--text3);opacity:.4}.tl-dot.gr{background:var(--green)}
+.tl-title{font-size:12px;font-weight:600;margin-bottom:1px}
+.tl-meta{font-size:10px;color:var(--text3)}
+.tl-amt{font-size:12px;font-weight:700;white-space:nowrap;margin-left:auto;padding-left:8px}
+
+/* ALERT */
+.alert{border-radius:9px;padding:10px 12px;margin-bottom:11px;border:1px solid;display:flex;gap:9px;font-size:11px;line-height:1.5;align-items:flex-start}
+.alert-ico{font-size:13px;flex-shrink:0;margin-top:1px}
+.alert-title{font-weight:700;font-size:12px;margin-bottom:2px}
+.alert.warn{background:var(--amber-bg);border-color:rgba(245,158,11,.22);color:var(--amber)}
+.alert.danger{background:var(--red-bg);border-color:rgba(239,68,68,.22);color:var(--red)}
+.alert.success{background:var(--green-bg);border-color:rgba(34,197,94,.22);color:var(--green)}
+.alert.info{background:var(--gold-faint);border-color:var(--border);color:var(--text2)}
+
+/* NOTIF */
+.ni{display:flex;gap:10px;padding:12px;background:var(--s2);border-radius:9px;border:1px solid var(--border);margin-bottom:8px;position:relative;transition:background .12s;cursor:pointer}
+.ni:hover{background:var(--s3)}
+.ni.unread::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);border-radius:3px 0 0 3px}
+.ni-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ni-title{font-size:12px;font-weight:700;margin-bottom:2px}
+.ni-body{font-size:11px;color:var(--text2);line-height:1.4}
+.ni-time{font-size:9px;color:var(--text3);margin-top:3px}
+
+/* VOTE */
+.vc{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:13px;margin-bottom:9px}
+.vc-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.vc-meta{font-size:10px;color:var(--text3);margin-bottom:10px}
+.vc-opts{display:flex;gap:7px;margin-bottom:9px}
+.vc-opt{flex:1;padding:7px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s3);color:var(--text);transition:all .12s}
+.vc-opt:hover,.vc-opt.sel{background:rgba(201,168,76,.1);border-color:var(--gold);color:var(--gold)}
+.vc-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.vc-lbl{width:32px;font-size:9px;color:var(--text3)}
+.vc-track{flex:1;height:3px;background:var(--s4);border-radius:2px;overflow:hidden}
+.vc-bar{height:100%;background:var(--gold);border-radius:2px;transition:width .4s}
+.vc-bar.no{background:var(--red)}
+.vc-pct{width:26px;text-align:right;font-size:9px;font-weight:700}
+
+/* BUTTONS */
+.btn{padding:7px 14px;border-radius:7px;font-size:10px;font-weight:700;border:none;cursor:pointer;letter-spacing:.3px;text-transform:uppercase;transition:all .12s;font-family:'DM Sans',sans-serif}
+.btn-gold{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:var(--deep)}.btn-gold:hover{filter:brightness(1.08)}
+.btn-ghost{background:var(--s2);color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{background:var(--s3)}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,.25)}.btn-danger:hover{background:rgba(239,68,68,.18)}
+.btn-sm{padding:4px 10px;font-size:9px}
+.btn-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+
+/* RING */
+.ring-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:4px 0 12px}
+.ring-rel{position:relative}
+.ring-txt{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.ring-pct{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);line-height:1}
+.ring-sub{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.ring-stats{display:flex;gap:16px;text-align:center}
+.rs-v{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700;line-height:1}
+.rs-l{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+/* BAR CHART */
+.bc{display:flex;align-items:flex-end;gap:5px;height:80px}
+.bc-g{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
+.bc-b{width:100%;border-radius:2px 2px 0 0;background:linear-gradient(180deg,var(--gold),var(--gold-d));opacity:.55;min-height:2px;cursor:pointer;transition:opacity .12s}
+.bc-b:hover{opacity:1}
+.bc-b.hi{opacity:1;background:linear-gradient(180deg,var(--gold-l),var(--gold))}
+.bc-l{font-size:8px;color:var(--text3);text-align:center}
+
+/* WALLET HERO */
+.wallet-hero{background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--border);border-radius:13px;padding:20px;margin-bottom:13px;position:relative;overflow:hidden}
+.wallet-hero::before{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.12),transparent 70%)}
+.wh-lbl{font-size:8px;text-transform:uppercase;letter-spacing:2px;color:var(--text3);margin-bottom:5px;font-weight:600}
+.wh-amt{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;color:var(--gold-l);line-height:1;margin-bottom:11px}
+.wh-row{display:flex;gap:18px;flex-wrap:wrap}
+.wh-item-lbl{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.wh-item-val{font-size:12px;font-weight:700;margin-top:1px}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(8px)}
+.modal-bg.show{display:flex}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:15px;padding:22px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;animation:mIn .2s ease}
+@keyframes mIn{from{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;margin-bottom:3px}
+.modal-sub{font-size:11px;color:var(--text3);margin-bottom:17px;line-height:1.4}
+.modal-acts{display:flex;gap:7px;justify-content:flex-end;margin-top:17px}
+
+/* CONFIRM DIALOG */
+.confirm-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px)}
+.confirm-bg.show{display:flex}
+.confirm-box{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:24px;width:100%;max-width:340px;text-align:center;animation:mIn .2s ease}
+.confirm-ico{font-size:32px;margin-bottom:12px}
+.confirm-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;margin-bottom:6px}
+.confirm-msg{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:20px}
+.confirm-acts{display:flex;gap:8px}
+.confirm-acts .btn{flex:1;padding:10px}
+
+/* TOAST */
+.toast{position:fixed;bottom:14px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--s2);border:1px solid var(--gold);border-radius:9px;padding:8px 15px;font-size:12px;font-weight:600;z-index:400;opacity:0;transition:all .22s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 28px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:768px){.toast{bottom:calc(var(--bh) + 10px)}}
+
+/* RECEIPT */
+.receipt{background:var(--s2);border:1px solid var(--border);border-radius:11px;padding:16px;margin-bottom:10px;position:relative}
+.receipt-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.receipt-ref{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);font-weight:700}
+.receipt-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.receipt-item-lbl{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.receipt-item-val{font-size:12px;font-weight:700}
+
+/* AUDIT TRAIL */
+.audit-item{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.035);font-size:11px}
+.audit-item:last-child{border-bottom:none}
+.audit-who{font-weight:700;color:var(--gold);flex-shrink:0;min-width:65px}
+.audit-action{flex:1;color:var(--text2);line-height:1.4}
+.audit-when{font-size:9px;color:var(--text3);white-space:nowrap;flex-shrink:0}
+
+/* DISPUTE */
+.dispute-item{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:13px;margin-bottom:9px}
+.dispute-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.dispute-title{font-size:12px;font-weight:700}
+.dispute-body{font-size:11px;color:var(--text2);line-height:1.4;margin-bottom:9px}
+.dispute-footer{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--text3)}
+
+/* PROFILE SECTION */
+.profile-av-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 0 14px;gap:10px}
+.profile-av-lg{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800}
+.profile-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;text-align:center}
+.profile-role{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;text-align:center}
+.fica-status{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}
+.fica-status:last-child{border-bottom:none}
+.fica-lbl{color:var(--text2)}
+
+/* PAYOUT CALC */
+.payout-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}
+.payout-row:last-child{border-bottom:none}
+.payout-member{display:flex;align-items:center;gap:8px;font-weight:600}
+.payout-net{font-weight:700;font-size:14px}
+.payout-total-row{background:rgba(201,168,76,.07);border-radius:8px;padding:13px;margin-top:12px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sb{display:none}
+  .bn{display:flex}
+  .tb-ham{display:flex}
+  .content{padding:13px;padding-bottom:calc(var(--bh) + 13px)}
+  .stats{grid-template-columns:1fr 1fr;gap:9px}
+  .two-col{grid-template-columns:1fr;gap:11px}
+  .fg2{grid-template-columns:1fr}
+  .tbl th:nth-child(n+5),.tbl td:nth-child(n+5){display:none}
+  .sc-val{font-size:20px}
+  .topbar{padding:0 11px}
+  .tb-cta{display:none}
+}
+@media(max-width:420px){
+  .stats{grid-template-columns:1fr 1fr}
+  .sc-val{font-size:18px}
+}
+</style>
 </head>
 <body>
-    <h1>The Bafanas Stokvel</h1>
-    <p class="subtitle">Secure Tomorrow, Invest Today!</p>
-    
-    <!-- First Palette -->
-    <div class="palette-row">
-        <div class="palette">
-            <div class="title">🌿 Classic Corporate Palette</div>
-            <div class="swatch-container">
-                <div class="swatch" style="background-color: #0B3D2E;">#0B3D2E</div>
-                <div class="swatch" style="background-color: #9BA89E;">#9BA89E</div>
-                <div class="swatch" style="background-color: #8B7968;">#8B7968</div>
-                <div class="swatch" style="background-color: #2C2C2C;">#2C2C2C</div>
-                <div class="swatch" style="background-color: #F5F5F5; color: black;">#F5F5F5</div>
-            </div>
-            <div class="vote-section">
-                <button class="vote-button" onclick="vote('classic')">Vote for this Palette</button>
-                <div class="vote-count" id="classic-votes">Votes: 0</div>
-            </div>
-        </div>
+
+<!-- ═══ SPLASH ═══════════════════════════════════ -->
+<div id="scSplash" class="screen show">
+  <div class="sp-bg"><div class="sp-grid"></div><div class="sp-orb sp-orb1"></div><div class="sp-orb sp-orb2"></div></div>
+  <div class="sp-body">
+    <div class="sp-mark"><div class="sp-mark-text">TB</div><div class="sp-ring sp-ring1"></div><div class="sp-ring sp-ring2"></div></div>
+    <div class="sp-name">The Bafana's Stokvel</div>
+    <div class="sp-sub">Investment Group · Est. October 2020</div>
+    <div class="sp-tag">"Invest in your future today."</div>
+    <div class="sp-rule"></div>
+    <div class="sp-pillars">
+      <div class="sp-pillar"><div class="sp-pillar-val">NASASA</div><div class="sp-pillar-lbl">Aligned</div></div>
+      <div style="width:1px;background:var(--border)"></div>
+      <div class="sp-pillar"><div class="sp-pillar-val">Nedbank</div><div class="sp-pillar-lbl">Bloemfontein</div></div>
+      <div style="width:1px;background:var(--border)"></div>
+      <div class="sp-pillar"><div class="sp-pillar-val">§NASASA</div><div class="sp-pillar-lbl">Governed</div></div>
     </div>
+  </div>
+  <div class="sp-loader"><div class="sp-track"><div class="sp-fill" id="spBar"></div></div><div class="sp-ltxt" id="spTxt">Initialising...</div></div>
+  <div class="sp-foot">Confidential · Member Data Protected</div>
+</div>
 
-    <!-- Second Palette -->
-    <div class="palette-row">
-        <div class="palette">
-            <div class="title">✨ Modern &amp; Sleek Palette</div>
-            <div class="swatch-container">
-                <div class="swatch" style="background-color: #004D40;">#004D40</div>
-                <div class="swatch" style="background-color: #4B4B4B;">#4B4B4B</div>
-                <div class="swatch" style="background-color: #C9A76F; color: black;">#C9A76F</div>
-                <div class="swatch" style="background-color: #1C1C1C;">#1C1C1C</div>
-                <div class="swatch" style="background-color: #FAFAFA; color: black;">#FAFAFA</div>
-            </div>
-            <div class="vote-section">
-                <button class="vote-button" onclick="vote('modern')">Vote for this Palette</button>
-                <div class="vote-count" id="modern-votes">Votes: 0</div>
-            </div>
-        </div>
+<!-- ═══ LOGIN ════════════════════════════════════ -->
+<div id="scLogin" class="screen">
+  <div class="lg-bg"><div class="lg-grid"></div><div class="lg-glow"></div></div>
+  <div class="lg-wrap">
+    <div class="lg-brand">
+      <div class="lg-emblem">TB</div>
+      <div class="lg-title">The Bafana's Stokvel</div>
+      <div class="lg-tag">Member Portal</div>
     </div>
-
-    <!-- Third Palette -->
-    <div class="palette-row">
-        <div class="palette">
-            <div class="title">🚀 Futuristic Finance Palette</div>
-            <div class="swatch-container">
-                <div class="swatch" style="background-color: #028A0F;">#028A0F</div>
-                <div class="swatch" style="background-color: #3A3A3A;">#3A3A3A</div>
-                <div class="swatch" style="background-color: #1B2845;">#1B2845</div>
-                <div class="swatch" style="background-color: #BFC5C5; color: black;">#BFC5C5</div>
-                <div class="swatch" style="background-color: #FFFFFF; color: black; border: 1px solid #ccc;">#FFFFFF</div>
-            </div>
-            <div class="vote-section">
-                <button class="vote-button" onclick="vote('futuristic')">Vote for this Palette</button>
-                <div class="vote-count" id="futuristic-votes">Votes: 0</div>
-            </div>
-        </div>
+    <div class="lg-card">
+      <div class="lg-card-title">Welcome back</div>
+      <div class="lg-card-sub">Sign in to your member account</div>
+      <div class="demo-box"><strong>Quick Access — Demo</strong><div id="qlList"></div></div>
+      <div class="or-line">or sign in manually</div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="lgEmail" placeholder="your@email.com"></div>
+      <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="lgPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')manualLogin()"></div>
+      <span class="lg-forgot" onclick="toast('📩 Password reset link sent to your email')">Forgot password?</span>
+      <button class="btn-primary" onclick="manualLogin()">Sign In →</button>
     </div>
+    <div class="lg-foot">NASASA Aligned · Nedbank Savings · 2031834045 · Branch 117134</div>
+  </div>
+</div>
 
-    <script>
-        // Initialize vote counts from localStorage or set to 0
-        let votes = {
-            classic: parseInt(localStorage.getItem('classic-votes')) || 0,
-            modern: parseInt(localStorage.getItem('modern-votes')) || 0,
-            futuristic: parseInt(localStorage.getItem('futuristic-votes')) || 0
-        };
+<!-- ═══ APP ═══════════════════════════════════════ -->
+<div id="scApp" class="screen">
+  <div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
+  <aside class="sb" id="sidebar">
+    <div class="sb-logo"><div class="sb-logo-name">The Bafana's</div><div class="sb-logo-tag">Investment Stokvel · 2020</div></div>
+    <nav class="sb-nav" id="sbNav"></nav>
+    <div class="sb-user"><div class="sb-chip" onclick="openModal('logout')"><div class="sb-chip-av" id="sbAv"></div><div style="flex:1"><div class="sb-chip-name" id="sbName"></div><div class="sb-chip-role" id="sbRole"></div></div><div class="sb-chip-out">⇠</div></div></div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <div class="tb-l"><button class="tb-ham" onclick="openSb()">☰</button><div class="tb-title" id="tbTitle">Dashboard</div></div>
+      <div class="tb-r">
+        <div class="tb-ico" onclick="goPage('notifications')">🔔<div class="tb-dot" id="tbDot"></div></div>
+        <div class="tb-ico" onclick="goPage('profile')" title="My Profile">👤</div>
+        <button class="tb-cta" id="tbCta" style="display:none"></button>
+      </div>
+    </header>
+    <div class="content" id="appContent">
+      <div id="s-dashboard" class="section"></div>
+      <div id="s-wallet" class="section"></div>
+      <div id="s-members" class="section"></div>
+      <div id="s-contributions" class="section"></div>
+      <div id="s-loans" class="section"></div>
+      <div id="s-fines" class="section"></div>
+      <div id="s-payout" class="section"></div>
+      <div id="s-votes" class="section"></div>
+      <div id="s-meetings" class="section"></div>
+      <div id="s-suggestions" class="section"></div>
+      <div id="s-notifications" class="section"></div>
+      <div id="s-reports" class="section"></div>
+      <div id="s-audit" class="section"></div>
+      <div id="s-disputes" class="section"></div>
+      <div id="s-profile" class="section"></div>
+    </div>
+    <nav class="bn" id="bnNav"></nav>
+  </div>
+</div>
 
-        // Function to update vote counts
-        function updateVotes() {
-            document.getElementById('classic-votes').textContent = `Votes: ${votes.classic}`;
-            document.getElementById('modern-votes').textContent = `Votes: ${votes.modern}`;
-            document.getElementById('futuristic-votes').textContent = `Votes: ${votes.futuristic}`;
-        }
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg" onclick="closeModalOut(event)"><div class="modal" id="modalBody"></div></div>
+<!-- CONFIRM -->
+<div class="confirm-bg" id="confirmBg"><div class="confirm-box" id="confirmBox"></div></div>
+<!-- TOAST -->
+<div class="toast" id="toastEl"></div>
 
-        // Function to handle voting
-        function vote(palette) {
-            votes[palette]++;
-            localStorage.setItem(`${palette}-votes`, votes[palette]);
-            updateVotes();
-        }
+<script>
+/* ═══════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════ */
+const MEMBERS = [
+  {id:'solomon', name:'Solomon Magashule', nick:'Solomon M.', init:'SM', role:'chairperson', roleLabel:'Chairperson', color:'#C9A84C,#8B6914', email:'solomon@bafanas.co.za', phone:'+27 82 111 2222', city:'Bloemfontein', bank:'Nedbank', acc:'1234567890', branch:'198765', paid2025:4550, paid2026:5500, target:6600, standing:false, fines:250, fica:{id:true,proof:true,bank:false}},
+  {id:'karabo',  name:'Karabo Mamadi',    nick:'Karabo M.',  init:'KM', role:'treasurer',   roleLabel:'Treasurer',   color:'#1A6B8A,#0D3D52', email:'karabo@bafanas.co.za',  phone:'+27 83 222 3333', city:'Johannesburg', bank:'FNB', acc:'2345678901', branch:'250655', paid2025:4200, paid2026:1400, target:6600, standing:false, fines:750, fica:{id:true,proof:true,bank:true}},
+  {id:'pako',    name:'Pako Moeti',       nick:'Pako M.',    init:'PM', role:'member',       roleLabel:'Member',      color:'#6B3FA0,#3D1F6B', email:'pako@bafanas.co.za',    phone:'+27 84 333 4444', city:'Pretoria', bank:'ABSA', acc:'3456789012', branch:'632005', paid2025:2900, paid2026:1800, target:6600, standing:false, fines:0, fica:{id:true,proof:false,bank:false}},
+  {id:'thabiso', name:'Thabiso Inama',    nick:'Thabiso I.', init:'TI', role:'secretary',    roleLabel:'Secretary',   color:'#B8860B,#7A5C00', email:'thabiso@bafanas.co.za', phone:'+27 85 444 5555', city:'Durban', bank:'Standard Bank', acc:'4567890123', branch:'051001', paid2025:900,  paid2026:0,    target:6600, standing:false, fines:0, fica:{id:true,proof:true,bank:true}},
+  {id:'charles', name:'Charles',          nick:'Charles',    init:'CH', role:'member',       roleLabel:'Member',      color:'#1A6B3A,#0D3D20', email:'charles@bafanas.co.za', phone:'+27 86 555 6666', city:'Cape Town', bank:'Nedbank', acc:'5678901234', branch:'198765', paid2025:3300, paid2026:1100, target:6600, standing:false, fines:0, fica:{id:true,proof:true,bank:true}},
+  {id:'mahase',  name:'Mahase',           nick:'Mahase',     init:'MH', role:'member',       roleLabel:'Member',      color:'#8B3A1A,#5D1A0D', email:'mahase@bafanas.co.za',  phone:'+27 87 666 7777', city:'Polokwane', bank:'Capitec', acc:'6789012345', branch:'470010', paid2025:3300, paid2026:0,    target:6600, standing:false, fines:0, fica:{id:false,proof:false,bank:false}},
+  {id:'ben',     name:'Ben',              nick:'Ben',        init:'BN', role:'organiser',    roleLabel:'Organiser',   color:'#166534,#14532D', email:'ben@bafanas.co.za',     phone:'+27 88 777 8888', city:'Johannesburg', bank:'Nedbank', acc:'7890123456', branch:'198765', paid2025:10000,paid2026:10000,target:6600, standing:true,  fines:0, fica:{id:true,proof:true,bank:true}},
+  {id:'majoro',  name:'Majoro',           nick:'Majoro',     init:'MJ', role:'member',       roleLabel:'Member',      color:'#6B7280,#374151', email:'majoro@bafanas.co.za',  phone:'+27 89 888 9999', city:'Mpumalanga', bank:'ABSA', acc:'8901234567', branch:'632005', paid2025:0,    paid2026:0,    target:6600, standing:false, fines:0, fica:{id:false,proof:false,bank:false}},
+  {id:'neo',     name:'Neo Majoro',       nick:'Neo M.',     init:'NM', role:'member',       roleLabel:'Member',      color:'#7C3AED,#5B21B6', email:'neo@bafanas.co.za',     phone:'+27 71 999 0000', city:'Pretoria', bank:'FNB', acc:'9012345678', branch:'250655', paid2025:1250, paid2026:0,    target:6600, standing:false, fines:0, fica:{id:true,proof:false,bank:false}},
+  {id:'thato',   name:'Thato',            nick:'Thato',      init:'TH', role:'member',       roleLabel:'Member',      color:'#0E7490,#164E63', email:'thato@bafanas.co.za',   phone:'+27 72 000 1111', city:'Bloemfontein', bank:'Standard Bank', acc:'0123456789', branch:'051001', paid2025:0,    paid2026:182,  target:6600, standing:false, fines:0, fica:{id:true,proof:false,bank:false}},
+  {id:'papiki',  name:'Papiki Hlapholosa',nick:'Papiki H.',  init:'PH', role:'member',       roleLabel:'Member',      color:'#9D174D,#701A5E', email:'papiki@bafanas.co.za',  phone:'+27 73 111 2222', city:'Johannesburg', bank:'Capitec', acc:'1122334455', branch:'470010', paid2025:0,    paid2026:0,    target:6600, standing:false, fines:0, fica:{id:false,proof:false,bank:false}},
+  {id:'nelson',  name:'Nelson Dlhamini',  nick:'Nelson D.',  init:'ND', role:'member',       roleLabel:'Member',      color:'#1E3A5F,#0F2A4A', email:'nelson@bafanas.co.za',  phone:'+27 74 222 3333', city:'Durban', bank:'Nedbank', acc:'2233445566', branch:'198765', paid2025:0,    paid2026:0,    target:6600, standing:false, fines:0, fica:{id:false,proof:false,bank:false}},
+];
 
-        // Display initial vote counts
-        updateVotes();
-    </script>
+const MONTHLY_2025=[3450,3250,4100,2900,4600,2900,1100,1100,700,550,550,3950];
+const MOS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+const LOANS=[
+  {id:'L001',member:'Pako Moeti',memberId:'pako',init:'PM',color:'#6B3FA0,#3D1F6B',principal:5000,issued:'Jan 30, 2026',rate:30,total:6500,repaid:1800,status:'overdue',type:'personal'},
+  {id:'L002',member:'Solomon (Papi)',memberId:'solomon',init:'SM',color:'#C9A84C,#8B6914',principal:1000,issued:'Jan 17, 2026',rate:30,total:1300,repaid:1300,status:'repaid',type:'personal'},
+];
+
+const FINES=[
+  {id:'F001',member:'Solomon (Papi)',memberId:'solomon',init:'SM',color:'#C9A84C,#8B6914',reason:'Late contributions (multiple months)',amount:250,date:'Dec 2025',paid:false},
+  {id:'F002',member:'Karabo Mamadi',memberId:'karabo',init:'KM',color:'#1A6B8A,#0D3D52',reason:'Late contributions (multiple months)',amount:750,date:'Dec 2025',paid:false},
+];
+
+const AUDIT_LOG=[
+  {who:'Karabo (Treasurer)',action:'Confirmed Ben contribution R10,000 for December 2025',when:'Dec 5, 2025 14:22'},
+  {who:'Solomon (Chair)',action:'Approved Pako loan R5,000 — member vote passed 6/7',when:'Jan 30, 2026 11:04'},
+  {who:'Karabo (Treasurer)',action:'Issued fine F002 to Karabo — R750 late contributions',when:'Dec 15, 2025 09:30'},
+  {who:'Solomon (Chair)',action:'Confirmed Papi loan repaid R1,300 — closed L002',when:'Feb 10, 2026 10:15'},
+  {who:'Karabo (Treasurer)',action:'Recorded Solomon contribution R550 — March 2026',when:'Mar 10, 2026 09:14'},
+  {who:'System',action:'Auto-generated overdue flag: Pako loan L001 past 30 Nov deadline',when:'Dec 1, 2025 00:00'},
+  {who:'Thabiso (Secretary)',action:'Scheduled meeting: Monthly Check-in March 2026',when:'Mar 1, 2026 08:00'},
+  {who:'Solomon (Chair)',action:'Opened vote: Team-building trip Option A',when:'Mar 5, 2026 13:30'},
+];
+
+const DISPUTES=[];
+
+const SUGGESTIONS=[
+  {id:1,author:'Anonymous',avatar:'?',color:'',time:'Mar 12, 2026',category:'Investment',text:'We should look into a money market account for the main account balance — R7k sitting idle could be earning interest.',upvotes:5,status:'open',pinned:true},
+  {id:2,author:'Ben',avatar:'BN',color:'#166534,#14532D',time:'Mar 8, 2026',category:'Governance',text:'Suggest a 3-strike rule for arrears — after 3 consecutive months, the matter goes to a formal vote on membership status.',upvotes:4,status:'open',pinned:false},
+  {id:3,author:'Anonymous',avatar:'?',color:'',time:'Feb 20, 2026',category:'Events',text:'Team-building trip could include a NASASA financial literacy workshop — free and counts as personal development.',upvotes:3,status:'open',pinned:false},
+  {id:4,author:'Solomon',avatar:'SM',color:'#C9A84C,#8B6914',time:'Feb 15, 2026',category:'Technology',text:'Integrate SnapScan QR codes directly into the contributions page so members can pay without leaving the app.',upvotes:6,status:'implemented',pinned:false},
+  {id:5,author:'Anonymous',avatar:'?',color:'',time:'Jan 30, 2026',category:'Investment',text:'Consider 5% of monthly contributions into an emergency hardship fund — separate from loans.',upvotes:2,status:'open',pinned:false},
+];
+
+const MEETINGS=[
+  {id:1,title:'Monthly Check-in — March 2026',date:'Sat 15 Mar 2026',time:'15:30',venue:"Solomon's Residence",type:'informal',status:'upcoming',agenda:['Financial report & balances','Contribution status update','Pako loan overdue discussion','2026 team-building trip vote','New business'],attendees:['SM','KM','PM','BN','CH'],quorum:true},
+  {id:2,title:'Annual General Meeting — 2025',date:'Sat 13 Sep 2025',time:'15:30',venue:'Magashule Residence',type:'formal',status:'past',agenda:['Adopt fine schedule','Trust structure approval','Loans & guarantees policy','Team-building budget options'],attendees:['SM','KM','PM','TI','BN','PH'],quorum:true,minutes:'Fine schedule adopted unanimously. Trust setup approved. Loan collateral rules confirmed. Budget vote deferred.'},
+  {id:3,title:'Monthly Check-in — August 2025',date:'Sat 16 Aug 2025',time:'15:00',venue:'Online — MS Teams',type:'informal',status:'past',agenda:['Balances review','Arrears discussion','Action items review'],attendees:['SM','KM','BN','CH','MH'],quorum:false,minutes:'Balances reviewed. 5 members in arrears noted. Action items updated.'},
+];
+
+const VOTES=[
+  {id:'V001',title:'Team-building trip — Option A (fund from interest)',deadline:'Closes Mar 20, 2026',yes:4,no:2,total:12,status:'open',type:'simple'},
+  {id:'V002',title:'Approve loan for Pako — R5,000 personal loan',deadline:'Closed Feb 1, 2026',yes:6,no:1,total:7,status:'closed',type:'simple'},
+  {id:'V003',title:'Adopt fine schedule effective 1 Sept 2025',deadline:'Closed Sept 13, 2025',yes:6,no:0,total:6,status:'closed',type:'simple'},
+];
+
+let currentUser=null, currentPage='dashboard', userVotes={}, activeCategory='All';
+
+/* ═══════════════════════════════════════════════
+   NAV CONFIGURATION
+═══════════════════════════════════════════════ */
+const NAV={
+  chairperson:[
+    {sec:'Overview',items:[{id:'dashboard',ico:'◈',lbl:'Dashboard'}]},
+    {sec:'Manage',items:[{id:'members',ico:'◉',lbl:'Members'},{id:'contributions',ico:'◎',lbl:'Contributions'},{id:'loans',ico:'⬡',lbl:'Loans'},{id:'fines',ico:'▲',lbl:'Fines',badge:2},{id:'payout',ico:'◆',lbl:'Payout'}]},
+    {sec:'Group',items:[{id:'meetings',ico:'◫',lbl:'Meetings'},{id:'votes',ico:'◐',lbl:'Votes'},{id:'suggestions',ico:'◭',lbl:'Suggestions'},{id:'disputes',ico:'⊘',lbl:'Disputes'}]},
+    {sec:'Admin',items:[{id:'audit',ico:'▣',lbl:'Audit Trail'},{id:'notifications',ico:'◬',lbl:'Alerts',badge:4},{id:'reports',ico:'▤',lbl:'Reports'}]},
+  ],
+  treasurer:[
+    {sec:'Overview',items:[{id:'dashboard',ico:'◈',lbl:'Dashboard'}]},
+    {sec:'Finance',items:[{id:'contributions',ico:'◎',lbl:'Contributions'},{id:'loans',ico:'⬡',lbl:'Loans'},{id:'fines',ico:'▲',lbl:'Fines',badge:2},{id:'payout',ico:'◆',lbl:'Payout'},{id:'reports',ico:'▤',lbl:'Reports'}]},
+    {sec:'Group',items:[{id:'meetings',ico:'◫',lbl:'Meetings'},{id:'votes',ico:'◐',lbl:'Votes'},{id:'audit',ico:'▣',lbl:'Audit Trail'},{id:'notifications',ico:'◬',lbl:'Alerts',badge:4}]},
+  ],
+  secretary:[
+    {sec:'Overview',items:[{id:'dashboard',ico:'◈',lbl:'Dashboard'}]},
+    {sec:'Manage',items:[{id:'members',ico:'◉',lbl:'Members'},{id:'meetings',ico:'◫',lbl:'Meetings'},{id:'votes',ico:'◐',lbl:'Votes'},{id:'suggestions',ico:'◭',lbl:'Suggestions'}]},
+    {sec:'Comms',items:[{id:'disputes',ico:'⊘',lbl:'Disputes'},{id:'notifications',ico:'◬',lbl:'Alerts',badge:4},{id:'reports',ico:'▤',lbl:'Reports'}]},
+  ],
+  organiser:[
+    {sec:'Overview',items:[{id:'dashboard',ico:'◈',lbl:'Dashboard'}]},
+    {sec:'Group',items:[{id:'meetings',ico:'◫',lbl:'Meetings'},{id:'votes',ico:'◐',lbl:'Votes'},{id:'suggestions',ico:'◭',lbl:'Suggestions'},{id:'notifications',ico:'◬',lbl:'Alerts'}]},
+  ],
+  member:[
+    {sec:'My Account',items:[{id:'wallet',ico:'◈',lbl:'My Wallet'},{id:'contributions',ico:'◎',lbl:'Contribute'}]},
+    {sec:'Group',items:[{id:'meetings',ico:'◫',lbl:'Meetings'},{id:'votes',ico:'◐',lbl:'Votes'},{id:'loans',ico:'⬡',lbl:'Loans'},{id:'suggestions',ico:'◭',lbl:'Suggestions'},{id:'notifications',ico:'◬',lbl:'Alerts',badge:2}]},
+  ],
+};
+
+const BN={
+  chairperson:[{id:'dashboard',ico:'◈',lbl:'Home'},{id:'members',ico:'◉',lbl:'Members'},{id:'meetings',ico:'◫',lbl:'Meetings'},{id:'payout',ico:'◆',lbl:'Payout'},{id:'notifications',ico:'◬',lbl:'Alerts',badge:4}],
+  treasurer:[{id:'dashboard',ico:'◈',lbl:'Home'},{id:'contributions',ico:'◎',lbl:'Contrib.'},{id:'loans',ico:'⬡',lbl:'Loans'},{id:'payout',ico:'◆',lbl:'Payout'},{id:'notifications',ico:'◬',lbl:'Alerts',badge:4}],
+  secretary:[{id:'dashboard',ico:'◈',lbl:'Home'},{id:'members',ico:'◉',lbl:'Members'},{id:'meetings',ico:'◫',lbl:'Meetings'},{id:'votes',ico:'◐',lbl:'Votes'},{id:'notifications',ico:'◬',lbl:'Alerts',badge:4}],
+  organiser:[{id:'dashboard',ico:'◈',lbl:'Home'},{id:'meetings',ico:'◫',lbl:'Meetings'},{id:'votes',ico:'◐',lbl:'Votes'},{id:'suggestions',ico:'◭',lbl:'Ideas'},{id:'notifications',ico:'◬',lbl:'Alerts'}],
+  member:[{id:'wallet',ico:'◈',lbl:'Wallet'},{id:'meetings',ico:'◫',lbl:'Meetings'},{id:'contributions',ico:'◎',lbl:'Contribute'},{id:'suggestions',ico:'◭',lbl:'Ideas'},{id:'notifications',ico:'◬',lbl:'Alerts',badge:2}],
+};
+
+const TITLES={dashboard:'Dashboard',wallet:'My Wallet',members:'Members',contributions:'Contributions',loans:'Loans',fines:'Fines',payout:'Payout Calculator',votes:'Votes',meetings:'Meetings',suggestions:'Suggestions',notifications:'Alerts',reports:'Reports',audit:'Audit Trail',disputes:'Disputes',profile:'My Profile'};
+const CTA={chairperson:{label:'+ Add Member',fn:"openModal('addMember')"},treasurer:{label:'+ Record',fn:"openModal('recordContrib')"},secretary:{label:'+ Meeting',fn:"openModal('scheduleMeeting')"}};
+
+/* ═══════════════════════════════════════════════
+   SPLASH
+═══════════════════════════════════════════════ */
+function runSplash(){
+  const bar=document.getElementById('spBar'),txt=document.getElementById('spTxt');
+  const msgs=['Initialising...','Loading member data...','Checking balances...','Verifying session...','Ready'];
+  let pct=0,mi=0;
+  const iv=setInterval(()=>{
+    pct+=1.8; bar.style.width=pct+'%';
+    const ni=Math.min(msgs.length-1,Math.floor((pct/100)*(msgs.length-1)));
+    if(ni!==mi){mi=ni;txt.textContent=msgs[mi];}
+    if(pct>=100){clearInterval(iv);txt.textContent='Ready';setTimeout(()=>{switchScreen('scSplash','scLogin');buildQL();},400);}
+  },25);
+}
+
+/* ═══════════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════════ */
+function buildQL(){
+  const show=MEMBERS.slice(0,6);
+  document.getElementById('qlList').innerHTML=show.map(u=>`
+    <button class="ql" onclick="login('${u.id}')">
+      <div class="ql-av" style="background:linear-gradient(135deg,${u.color})">${u.init}</div>
+      <div class="ql-name">${u.name}</div>
+      <div class="ql-role">${u.roleLabel}</div>
+      <span style="color:var(--text3);font-size:12px">→</span>
+    </button>`).join('');
+}
+
+function manualLogin(){
+  const e=document.getElementById('lgEmail').value.trim();
+  const u=MEMBERS.find(m=>m.email===e);
+  if(u){login(u.id);}else{toast('⚠ Enter a valid member email or use quick access above');}
+}
+
+function login(uid){
+  currentUser=MEMBERS.find(m=>m.id===uid);
+  if(!currentUser)return;
+  buildApp();
+  switchScreen('scLogin','scApp');
+  const first=(NAV[currentUser.role]||NAV.member)[0].items[0].id;
+  goPage(first,true);
+}
+
+function switchScreen(from,to){
+  document.getElementById(from).classList.remove('show');
+  const t=document.getElementById(to); t.classList.add('show');
+}
+
+/* ═══════════════════════════════════════════════
+   APP BUILD
+═══════════════════════════════════════════════ */
+function buildApp(){
+  const u=currentUser;
+  document.getElementById('sbAv').style.background=`linear-gradient(135deg,${u.color})`;
+  document.getElementById('sbAv').textContent=u.init;
+  document.getElementById('sbName').textContent=u.nick;
+  document.getElementById('sbRole').textContent=u.roleLabel;
+
+  const cfg=CTA[u.role];
+  const ctaEl=document.getElementById('tbCta');
+  if(cfg){ctaEl.textContent=cfg.label;ctaEl.onclick=new Function(cfg.fn);ctaEl.style.display='';}
+  else ctaEl.style.display='none';
+
+  const hasBadge=(NAV[u.role]||[]).some(g=>g.items.some(i=>i.badge));
+  document.getElementById('tbDot').style.display=hasBadge?'':'none';
+
+  const nav=NAV[u.role]||NAV.member;
+  document.getElementById('sbNav').innerHTML=nav.map(g=>`
+    <div class="sb-sec">${g.sec}</div>
+    ${g.items.map(i=>`<button class="sb-item" id="sbi-${i.id}" onclick="goPage('${i.id}')">`+
+      `<span class="sb-icon">${i.ico}</span>${i.lbl}`+
+      (i.badge?`<span class="sb-badge">${i.badge}</span>`:'')+
+    `</button>`).join('')}`).join('');
+
+  const bn=BN[u.role]||BN.member;
+  document.getElementById('bnNav').innerHTML=bn.map(i=>`
+    <button class="bn-item" id="bni-${i.id}" onclick="goPage('${i.id}')">
+      <span class="bn-icon">${i.ico}</span>${i.lbl}
+      ${i.badge?`<span class="bn-badge">${i.badge}</span>`:''}
+    </button>`).join('');
+}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+function goPage(page,silent){
+  currentPage=page;
+  document.querySelectorAll('.sb-item').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.bn-item').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.section').forEach(e=>e.classList.remove('on'));
+  const sbi=document.getElementById(`sbi-${page}`); if(sbi)sbi.classList.add('on');
+  const bni=document.getElementById(`bni-${page}`); if(bni)bni.classList.add('on');
+  const s=document.getElementById(`s-${page}`);
+  if(s){s.classList.add('on');renderPage(page);}
+  document.getElementById('tbTitle').textContent=TITLES[page]||page;
+  document.getElementById('appContent').scrollTop=0;
+  closeSb();
+}
+
+const RENDERERS={
+  dashboard:rDashboard, wallet:rWallet, members:rMembers,
+  contributions:rContributions, loans:rLoans, fines:rFines,
+  payout:rPayout, votes:rVotes, meetings:rMeetings,
+  suggestions:rSuggestions, notifications:rNotifications,
+  reports:rReports, audit:rAudit, disputes:rDisputes, profile:rProfile,
+};
+function renderPage(p){const el=document.getElementById(`s-${p}`);if(el&&RENDERERS[p])RENDERERS[p](el);}
+
+/* ═══════════════════════════════════════════════
+   POOL CALCULATIONS (live)
+═══════════════════════════════════════════════ */
+function poolTotal(){
+  const invest=46850.26, main=7404.22;
+  const finesOut=FINES.filter(f=>!f.paid).reduce((s,f)=>s+f.amount,0);
+  const loansOut=LOANS.filter(l=>l.status!=='repaid').reduce((s,l)=>s+(l.total-l.repaid),0);
+  return invest+main-loansOut;
+}
+function maxLoan(){return Math.round(poolTotal()*0.25);}
+function totalContrib(){return MEMBERS.reduce((s,m)=>s+m.paid2025,0);}
+
+/* ═══════════════════════════════════════════════
+   PAGE: DASHBOARD
+═══════════════════════════════════════════════ */
+function rDashboard(el){
+  const isAdmin=['chairperson','treasurer','secretary'].includes(currentUser.role);
+  const pool=poolTotal(), tContrib=totalContrib();
+  const goodCount=MEMBERS.filter(m=>m.standing).length;
+  el.innerHTML=`
+    ${!currentUser.standing?`<div class="alert warn"><span class="alert-ico">⚠</span><div><div class="alert-title">Your account has arrears</div>Loan and payout eligibility suspended until contributions are settled.</div></div>`:''}
+    ${isAdmin?`<div class="alert danger"><span class="alert-ico">⛔</span><div><div class="alert-title">${MEMBERS.length-goodCount} of ${MEMBERS.length} members in arrears</div>Only Ben is currently in good standing. Total outstanding: R${(MEMBERS.reduce((s,m)=>s+(m.target-m.paid2025>0?m.target-m.paid2025:0),0)).toLocaleString()}.</div></div>`:''}
+    <div class="stats">
+      <div class="stat-card"><div class="sc-lbl">Investment Account</div><div class="sc-val"><small>R</small>46,850</div><div class="sc-sub up">▲ +12% since May</div></div>
+      <div class="stat-card"><div class="sc-lbl">Main Account</div><div class="sc-val"><small>R</small>7,404</div><div class="sc-sub">Nedbank · 2031834045</div></div>
+      <div class="stat-card"><div class="sc-lbl">Pool Value (live)</div><div class="sc-val"><small>R</small>${Math.round(pool/1000)}k</div><div class="sc-sub warn">After loans & fines</div></div>
+      <div class="stat-card"><div class="sc-lbl">Good Standing</div><div class="sc-val">${goodCount}<span style="font-size:13px;color:var(--text3)">/${MEMBERS.length}</span></div><div class="sc-sub dn">Ben only</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-hd"><div class="card-title">2025 Contributions</div></div>
+        <div class="bc" id="bc1"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <span style="font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Jan – Dec 2025</span>
+          <span style="font-size:9px;color:var(--gold);font-weight:700">R${tContrib.toLocaleString()}</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-title">Annual Goal</div></div>
+        <div class="ring-wrap">
+          <div class="ring-rel" style="width:92px;height:92px">
+            <svg width="92" height="92" viewBox="0 0 92 92" style="transform:rotate(-90deg)">
+              <circle cx="46" cy="46" r="37" fill="none" stroke="#1F2636" stroke-width="10"/>
+              <circle cx="46" cy="46" r="37" fill="none" stroke="url(#rg)" stroke-width="10"
+                stroke-dasharray="232.5" stroke-dashoffset="${232.5*(1-tContrib/(MEMBERS.length*6600))}" stroke-linecap="round"/>
+              <defs><linearGradient id="rg"><stop offset="0%" style="stop-color:#8B6914"/>
+              <stop offset="100%" style="stop-color:#E8C97A"/></linearGradient></defs>
+            </svg>
+            <div class="ring-txt"><div class="ring-pct">${Math.round(tContrib/(MEMBERS.length*6600)*100)}%</div><div class="ring-sub">of goal</div></div>
+          </div>
+          <div class="ring-stats">
+            <div><div class="rs-v" style="color:var(--gold)">R${Math.round(tContrib/1000)}k</div><div class="rs-l">Raised</div></div>
+            <div><div class="rs-v">R${Math.round(MEMBERS.length*6600/1000)}k</div><div class="rs-l">Target</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Recent Activity</div><button class="card-act" onclick="goPage('audit')">Full audit trail</button></div>
+      <div class="tl">
+        ${AUDIT_LOG.slice(0,6).map(a=>`<div class="tl-item"><div class="tl-dot g"></div><div style="flex:1"><div class="tl-title">${a.action}</div><div class="tl-meta">${a.who} · ${a.when}</div></div></div>`).join('')}
+      </div>
+    </div>`;
+  const bc=document.getElementById('bc1');
+  if(bc){const mx=Math.max(...MONTHLY_2025);bc.innerHTML=MONTHLY_2025.map((v,i)=>`<div class="bc-g"><div class="bc-b${i===11?' hi':''}" style="height:${Math.max(2,(v/mx)*100)}%" title="R${v.toLocaleString()}"></div><div class="bc-l">${MOS[i].charAt(0)}</div></div>`).join('');}
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: WALLET (member self view)
+═══════════════════════════════════════════════ */
+function rWallet(el){
+  const u=currentUser;
+  const pct=Math.min(100,Math.round((u.paid2025/u.target)*100));
+  const v=u.paid2025-u.target;
+  const poolShare=Math.round((u.paid2025/totalContrib())*100);
+  el.innerHTML=`
+    <div class="wallet-hero">
+      <div class="wh-lbl">My 2025 Contributions</div>
+      <div class="wh-amt">R${u.paid2025.toLocaleString()}</div>
+      <div class="wh-row">
+        <div><div class="wh-item-lbl">Standing</div><div class="wh-item-val" style="color:${u.standing?'var(--green)':'var(--red)'}">${u.standing?'Good ✓':'Arrears ✗'}</div></div>
+        <div><div class="wh-item-lbl">Target</div><div class="wh-item-val">R${u.target.toLocaleString()}</div></div>
+        <div><div class="wh-item-lbl">Variance</div><div class="wh-item-val" style="color:${v>=0?'var(--green)':'var(--red)'}">${v>=0?'+':''}R${Math.abs(v).toLocaleString()}</div></div>
+        ${u.fines?`<div><div class="wh-item-lbl">Fines</div><div class="wh-item-val" style="color:var(--red)">R${u.fines}</div></div>`:''}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">2025 Progress</div><span class="badge ${pct>=100?'b-green':'b-amber'}">${pct}%</span></div>
+      <div class="pb-track" style="height:7px;margin-bottom:7px"><div class="pb-fill ${pct>=100?'full':pct===0?'red':''}" style="width:${pct}%"></div></div>
+      <div style="font-size:11px;color:var(--text3)">R${u.paid2025.toLocaleString()} of R${u.target.toLocaleString()} · Year ends 30 November · Option A: R550/month</div>
+    </div>
+    ${!u.standing?`<div class="alert danger"><span class="alert-ico">⛔</span><div><div class="alert-title">Loan & payout eligibility suspended</div>Settle all outstanding contributions and fines to restore eligibility.</div></div>`:''}
+    <div class="two-col">
+      <div class="card">
+        <div class="card-hd"><div class="card-title">Pool Share</div></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--gold)">${poolShare}%</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">of total 2025 contributions</div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-title">Max Loan</div></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:${u.standing?'var(--text)':'var(--red)'}">
+          ${u.standing?'R'+maxLoan().toLocaleString():'Blocked'}
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">25% of pool · 35% p.a.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">FICA / KYC Status</div></div>
+      ${[['SA ID Document',u.fica.id],['Proof of Residence',u.fica.proof],['Banking Details',u.fica.bank]].map(([lbl,ok])=>`
+        <div class="fica-status"><span class="fica-lbl">${lbl}</span><span class="badge ${ok?'b-green':'b-red'}">${ok?'Verified':'Pending'}</span></div>`).join('')}
+      ${!u.fica.bank?`<div class="btn-row"><button class="btn btn-gold" onclick="openModal('editProfile')">Update Banking Details</button></div>`:''}
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-gold" onclick="openModal('uploadPop')">↑ Upload Proof of Payment</button>
+      ${u.standing?`<button class="btn btn-ghost" onclick="openModal('requestLoan')">Request Loan</button>`:''}
+      <button class="btn btn-ghost" onclick="goPage('profile')">Edit Profile</button>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: MEMBERS
+═══════════════════════════════════════════════ */
+function rMembers(el){
+  const canEdit=['chairperson','secretary'].includes(currentUser.role);
+  let query='';
+  function html(){
+    const filtered=MEMBERS.filter(m=>m.name.toLowerCase().includes(query)||m.roleLabel.toLowerCase().includes(query));
+    return `
+      ${canEdit?`<div class="card-hd" style="margin-bottom:13px"><div class="card-title">Member Register <span style="font-size:11px;color:var(--text3);font-family:'DM Sans',sans-serif;font-weight:400">(${MEMBERS.length} members)</span></div><button class="btn btn-gold btn-sm" onclick="openModal('addMember')">+ Add</button></div>`:''}
+      <div class="search-wrap"><span class="search-ico">🔍</span><input class="search-input" placeholder="Search members..." oninput="memberSearch(this.value)"></div>
+      <div class="card" style="margin-bottom:13px">
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Member</th><th>Role</th><th>2025 Paid</th><th>Variance</th><th>FICA</th><th>Standing</th></tr></thead>
+          <tbody>${filtered.map(m=>{
+            const v=m.paid2025-m.target;
+            const ficaOk=m.fica.id&&m.fica.proof&&m.fica.bank;
+            return `<tr onclick="viewMember('${m.id}')">
+              <td><div class="mc"><div class="av" style="background:linear-gradient(135deg,${m.color})">${m.init}</div><span style="font-weight:700">${m.name}</span></div></td>
+              <td><span class="badge b-muted">${m.roleLabel}</span></td>
+              <td style="font-weight:700">R${m.paid2025.toLocaleString()}</td>
+              <td style="font-weight:700;color:${v>=0?'var(--green)':'var(--red)'}">${v>=0?'+':''}R${Math.abs(v).toLocaleString()}</td>
+              <td><span class="badge ${ficaOk?'b-green':'b-amber'}">${ficaOk?'Complete':'Pending'}</span></td>
+              <td><span class="badge ${m.standing?'b-green':'b-red'}">${m.standing?'Good':'Arrears'}</span></td>
+            </tr>`;}).join('')}
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card"><div class="card-hd"><div class="card-title">Contribution Progress — 2025</div></div>
+        ${MEMBERS.map(m=>{
+          const pct=Math.min(100,Math.round((m.paid2025/m.target)*100));
+          return `<div class="pb-wrap">
+            <div class="pb-hd"><span style="font-weight:700;font-size:12px">${m.name}</span><span style="font-size:10px;color:${m.standing?'var(--green)':'var(--text3)'}">R${m.paid2025.toLocaleString()} / R${m.target.toLocaleString()}</span></div>
+            <div class="pb-track"><div class="pb-fill ${m.paid2025===0?'red':pct>=100?'full':''}" style="width:${pct}%"></div></div>
+          </div>`;}).join('')}
+      </div>`;
+  }
+  el.innerHTML=html();
+  window.memberSearch=function(v){query=v.toLowerCase();document.getElementById('s-members').innerHTML=html();};
+}
+
+function viewMember(id){
+  const m=MEMBERS.find(x=>x.id===id);
+  if(!m)return;
+  const ficaOk=m.fica.id&&m.fica.proof&&m.fica.bank;
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-title">${m.name}</div>
+    <div class="modal-sub">${m.roleLabel} · ${m.city}</div>
+    <div class="profile-av-wrap" style="padding:10px 0 12px">
+      <div class="av" style="width:50px;height:50px;font-size:17px;background:linear-gradient(135deg,${m.color})">${m.init}</div>
+    </div>
+    ${[['Email',m.email],['Phone',m.phone],['City',m.city],['Bank',m.bank],['Account',m.acc],['Branch',m.branch]].map(([l,v])=>`
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px">
+        <span style="color:var(--text3)">${l}</span><span style="font-weight:600">${v||'—'}</span>
+      </div>`).join('')}
+    <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">FICA Status</span>
+      <span class="badge ${ficaOk?'b-green':'b-amber'}">${ficaOk?'Complete':'Pending'}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+      <span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Standing</span>
+      <span class="badge ${m.standing?'b-green':'b-red'}">${m.standing?'Good Standing':'In Arrears'}</span>
+    </div>
+    <div class="modal-acts"><button class="btn btn-ghost" onclick="closeModal()">Close</button></div>`;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: CONTRIBUTIONS
+═══════════════════════════════════════════════ */
+function rContributions(el){
+  const isMember=currentUser.role==='member';
+  const contribs=[
+    ['Ben','Dec 2025','+R3,950','EFT','b-green','Confirmed','REC-2025-12-BN'],
+    ['Ben','Nov 2025','+R550','EFT','b-green','Confirmed','REC-2025-11-BN'],
+    ['Solomon','Nov 2025','+R600','EFT','b-green','Confirmed','REC-2025-11-SM'],
+    ['Karabo','Nov 2025','+R700','EFT','b-green','Confirmed','REC-2025-11-KM'],
+    ['Solomon','Sep 2025','+R150','Cash','b-amber','Partial','REC-2025-09-SM'],
+    ['Pako','Sep 2025','+R2,651','EFT','b-green','Confirmed','REC-2025-09-PM'],
+    ['Majoro','All 2025','R0','—','b-red','Overdue','—'],
+  ];
+  el.innerHTML=`
+    <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card"><div class="sc-lbl">2025 Collected</div><div class="sc-val"><small>R</small>${(totalContrib()/1000).toFixed(1)}k</div><div class="sc-sub warn">55% of target</div></div>
+      <div class="stat-card"><div class="sc-lbl">Outstanding</div><div class="sc-val"><small>R</small>${Math.round((MEMBERS.reduce((s,m)=>s+(m.target-m.paid2025>0?m.target-m.paid2025:0),0))/1000)}k</div><div class="sc-sub dn">${MEMBERS.filter(m=>m.paid2025<m.target).length} members</div></div>
+      <div class="stat-card"><div class="sc-lbl">2026 YTD</div><div class="sc-val"><small>R</small>${Math.round(MEMBERS.reduce((s,m)=>s+m.paid2026,0)/1000)}k</div><div class="sc-sub up">Mar 2026</div></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">${isMember?'Upload My Payment':'Record Contribution'}</div></div>
+      <div class="alert info"><span class="alert-ico">🏦</span><div>Nedbank Savings · <strong>2031834045</strong> · Branch 117134 · The Bafana's Stokvel<br>Reference: YOUR NAME + MONTH (e.g. PAPI MAR 2026)</div></div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Member</label>
+          <select class="fi" id="cMem">${isMember?`<option>${currentUser.name}</option>`:MEMBERS.map(m=>`<option>${m.name}</option>`).join('')}</select></div>
+        <div class="fg"><label class="fl">Amount (R)</label><input class="fi" type="number" value="550" id="cAmt"></div>
+        <div class="fg"><label class="fl">Month</label><select class="fi"><option>March 2026</option><option>February 2026</option><option>January 2026</option></select></div>
+        <div class="fg"><label class="fl">Method</label><select class="fi"><option>EFT</option><option>SnapScan</option><option>Cash</option></select></div>
+      </div>
+      <div class="fg"><label class="fl">Reference</label><input class="fi" placeholder="e.g. PAPI MAR 2026" id="cRef"></div>
+      <div class="btn-row">
+        ${!isMember?`<button class="btn btn-gold" onclick="confirmAction('Record this contribution?','This will update the member\'s balance and send a receipt.','Record Contribution',()=>recordContrib())">✓ Record & Issue Receipt</button>`:''}
+        <button class="btn btn-ghost" onclick="openModal('uploadPop')">↑ Upload Proof</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">History</div><button class="card-act" onclick="toast('📥 CSV exported')">Export CSV</button></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Member</th><th>Month</th><th>Amount</th><th>Method</th><th>Status</th><th>Receipt</th></tr></thead>
+        <tbody>${contribs.map(([m,mo,amt,meth,bc,st,ref])=>`
+          <tr><td style="font-weight:700">${m}</td><td>${mo}</td>
+          <td style="font-weight:700;color:${amt.startsWith('+')?'var(--green)':'var(--red)'}">${amt}</td>
+          <td style="color:var(--text3)">${meth}</td>
+          <td><span class="badge ${bc}">${st}</span></td>
+          <td>${ref!=='—'?`<button class="btn btn-ghost btn-sm" onclick="showReceipt('${ref}','${m}','${mo}','${amt}')">Receipt</button>`:'—'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+function recordContrib(){
+  const m=document.getElementById('cMem')?.value||'Member';
+  const a=document.getElementById('cAmt')?.value||'550';
+  const ref=document.getElementById('cRef')?.value||'—';
+  AUDIT_LOG.unshift({who:`${currentUser.nick} (${currentUser.roleLabel})`,action:`Recorded contribution R${parseInt(a).toLocaleString()} for ${m} — ref: ${ref||'manual'}`,when:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})});
+  toast(`✅ R${parseInt(a).toLocaleString()} recorded for ${m} — receipt generated`);
+}
+
+function showReceipt(ref,member,month,amount){
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-title">Contribution Receipt</div>
+    <div class="modal-sub">The Bafana's Stokvel · Official Record</div>
+    <div style="background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);font-weight:700">Receipt #${ref}</div>
+        <span class="badge b-green">Confirmed</span>
+      </div>
+      ${[['Member',member],['Period',month],['Amount',amount.replace('+','')],['Account','Nedbank 2031834045'],['Issued by','The Bafana\'s Stokvel'],['Date',new Date().toLocaleDateString('en-ZA')]].map(([l,v])=>`
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px">
+          <span style="color:var(--text3)">${l}</span><span style="font-weight:700">${v}</span>
+        </div>`).join('')}
+    </div>
+    <div class="modal-acts">
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+      <button class="btn btn-gold" onclick="toast('📤 Receipt shared via WhatsApp');closeModal()">Share Receipt</button>
+    </div>`;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: LOANS
+═══════════════════════════════════════════════ */
+function rLoans(el){
+  const canApprove=['chairperson','treasurer'].includes(currentUser.role);
+  const isMember=currentUser.role==='member';
+  const maxL=maxLoan();
+  el.innerHTML=`
+    <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card"><div class="sc-lbl">Active Loans</div><div class="sc-val">${LOANS.filter(l=>l.status!=='repaid').length}</div><div class="sc-sub dn">Pako overdue</div></div>
+      <div class="stat-card"><div class="sc-lbl">Annual Rate</div><div class="sc-val">35%</div><div class="sc-sub">30% applied 2026</div></div>
+      <div class="stat-card"><div class="sc-lbl">Max Loan (live)</div><div class="sc-val"><small>R</small>${Math.round(maxL/1000)}k</div><div class="sc-sub">25% of R${Math.round(poolTotal()/1000)}k pool</div></div>
+    </div>
+    <div class="alert danger"><span class="alert-ico">⚠</span><div><div class="alert-title">Pako's loan is overdue</div>R${(LOANS[0].total-LOANS[0].repaid).toLocaleString()} outstanding. Deadline 30 Nov 2025 passed. Member ineligible for new loans.</div></div>
+    ${LOANS.map(l=>`
+      <div style="background:var(--s2);border:1px solid ${l.status==='overdue'?'rgba(239,68,68,.3)':l.status==='repaid'?'rgba(34,197,94,.2)':'var(--border)'};border-radius:10px;padding:13px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+          <div><div class="mc" style="margin-bottom:3px"><div class="av" style="background:linear-gradient(135deg,${l.color});width:26px;height:26px;font-size:9px">${l.init}</div><span style="font-weight:700">${l.member}</span></div>
+          <div style="font-size:10px;color:var(--text3)">Ref: ${l.id} · Issued ${l.issued}</div></div>
+          <span class="badge ${l.status==='repaid'?'b-green':l.status==='overdue'?'b-red':'b-amber'}">${l.status}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+          ${[['Principal','R'+l.principal.toLocaleString(),''],['Interest',l.rate+'%',''],['Total Due','R'+l.total.toLocaleString(),''],['Outstanding','R'+(l.total-l.repaid).toLocaleString(),l.total-l.repaid===0?'var(--green)':'var(--red)']].map(([lb,v,c])=>`
+            <div><div style="font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">${lb}</div>
+            <div style="font-size:12px;font-weight:700;${c?`color:${c}`:''}">${v}</div></div>`).join('')}
+        </div>
+        <div class="pb-track"><div class="pb-fill ${l.status==='repaid'?'full':'red'}" style="width:${Math.round((l.repaid/l.total)*100)}%"></div></div>
+        <div style="font-size:9px;color:var(--text3);margin-top:4px">R${l.repaid.toLocaleString()} repaid of R${l.total.toLocaleString()}</div>
+        ${canApprove&&l.status!=='repaid'?`<div class="btn-row"><button class="btn btn-gold btn-sm" onclick="confirmAction('Record repayment for ${l.member}?','This will update the loan balance and audit trail.','Record',()=>recordRepayment('${l.id}'))">Record Repayment</button><button class="btn btn-ghost btn-sm" onclick="toast('📩 Reminder sent to ${l.member}')">Send Reminder</button></div>`:''}
+      </div>`).join('')}
+    <div class="card">
+      <div class="card-hd"><div class="card-title">New Loan Request</div></div>
+      ${!currentUser.standing?`<div class="restricted" style="display:flex;flex-direction:column;align-items:center;padding:20px;text-align:center;gap:8px"><div style="font-size:28px;opacity:.3">🔒</div><div style="font-size:13px;font-weight:700;color:var(--text3)">Not eligible</div><div style="font-size:11px;color:var(--text3);max-width:240px;line-height:1.5">You must be in good standing — no overdue contributions or fines — to request a loan.</div></div>`:`
+      <div class="alert info"><span class="alert-ico">ⓘ</span><div>Max loan: R${maxL.toLocaleString()} (25% of pool). Loans over R10,000 require a member vote. All loans repaid by 30 November. Interest: 35% p.a.</div></div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Amount (R)</label><input class="fi" type="number" placeholder="Max R${maxL.toLocaleString()}" id="lAmt" oninput="checkLoanAmt(this)"></div>
+        <div class="fg"><label class="fl">Type</label><select class="fi"><option>Personal</option><option>Non-member (I am guarantor)</option></select></div>
+      </div>
+      <div id="loanVoteWarn" style="display:none"><div class="alert warn"><span class="alert-ico">⚠</span><div><div class="alert-title">Member vote required</div>Loans over R10,000 must be approved by a member vote before disbursement (§17). Submitting will automatically open a vote.</div></div></div>
+      <div class="fg"><label class="fl">Purpose</label><textarea class="fi" placeholder="Describe the loan purpose..."></textarea></div>
+      <button class="btn btn-gold" onclick="submitLoan()">Submit Request</button>`}
+    </div>`;
+}
+
+function checkLoanAmt(input){
+  const v=parseInt(input.value)||0;
+  document.getElementById('loanVoteWarn').style.display=v>10000?'block':'none';
+}
+
+function recordRepayment(id){
+  const loan=LOANS.find(l=>l.id===id);
+  if(loan){
+    loan.repaid=loan.total;
+    loan.status='repaid';
+    AUDIT_LOG.unshift({who:`${currentUser.nick} (${currentUser.roleLabel})`,action:`Recorded full repayment for loan ${id} — ${loan.member} — R${loan.total.toLocaleString()}`,when:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})});
+    toast('✅ Repayment recorded — loan closed');
+    renderPage('loans');
+  }
+}
+
+function submitLoan(){
+  const amt=parseInt(document.getElementById('lAmt')?.value)||0;
+  if(amt>maxLoan()){toast(`⚠ Amount exceeds maximum R${maxLoan().toLocaleString()}`);return;}
+  if(amt>10000){
+    confirmAction('This loan requires a member vote','R'+amt.toLocaleString()+' exceeds R10,000. A vote will be opened automatically.','Submit & Open Vote',()=>{
+      AUDIT_LOG.unshift({who:`${currentUser.nick}`,action:`Submitted loan request R${amt.toLocaleString()} — vote triggered (>R10k)`,when:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})});
+      toast('✅ Loan request submitted — member vote opened');
+    });
+  }else{
+    AUDIT_LOG.unshift({who:`${currentUser.nick}`,action:`Submitted loan request R${amt.toLocaleString()} — pending Chairperson approval`,when:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})});
+    toast('✅ Loan request submitted for Chairperson approval');
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: FINES
+═══════════════════════════════════════════════ */
+function rFines(el){
+  const canEdit=['chairperson','treasurer'].includes(currentUser.role);
+  const schedule=[['Late contribution (per month)','R50','Auto from 1 Sept 2025'],['Absence without apology','R150','Manual'],['Disrespectful behaviour','R100','Manual'],['Late coming to meeting','R250','2026 schedule'],['Not hosting when scheduled','R500','2026 schedule'],['Admin-related offence','R250','2026 schedule'],['Unruly behaviour','R250','2026 schedule']];
+  el.innerHTML=`
+    <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card"><div class="sc-lbl">Outstanding</div><div class="sc-val"><small>R</small>${FINES.filter(f=>!f.paid).reduce((s,f)=>s+f.amount,0).toLocaleString()}</div><div class="sc-sub dn">${FINES.filter(f=>!f.paid).length} unpaid</div></div>
+      <div class="stat-card"><div class="sc-lbl">Collected 2025</div><div class="sc-val"><small>R</small>0</div><div class="sc-sub">YTD</div></div>
+      <div class="stat-card"><div class="sc-lbl">Late Fee</div><div class="sc-val">R50</div><div class="sc-sub">Per month late</div></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Fine Schedule</div></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Offence</th><th>Amount</th><th>Notes</th></tr></thead>
+        <tbody>${schedule.map(([o,a,n])=>`<tr><td>${o}</td><td style="color:var(--red);font-weight:700">${a}</td><td style="color:var(--text3)">${n}</td></tr>`).join('')}</tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Outstanding Fines</div>${canEdit?`<button class="btn btn-gold btn-sm" onclick="openModal('addFine')">+ Issue Fine</button>`:''}</div>
+      ${FINES.filter(f=>!f.paid).map(f=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+          <div><div class="mc" style="margin-bottom:2px"><div class="av" style="background:linear-gradient(135deg,${f.color});width:24px;height:24px;font-size:8px">${f.init}</div><span style="font-weight:700;font-size:12px">${f.member}</span></div>
+          <div style="font-size:10px;color:var(--text3)">${f.reason} · ${f.date}</div></div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-weight:700;color:var(--red)">R${f.amount}</span>
+            ${canEdit?`<button class="btn btn-ghost btn-sm" onclick="confirmAction('Mark fine as paid?','R${f.amount} from ${f.member} — ${f.reason}','Mark Paid',()=>markFinePaid('${f.id}'))">Mark Paid</button>`:''}
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function markFinePaid(id){
+  const f=FINES.find(x=>x.id===id);
+  if(f){f.paid=true;AUDIT_LOG.unshift({who:`${currentUser.nick}`,action:`Fine ${id} marked as paid — ${f.member} R${f.amount}`,when:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})});toast('✅ Fine marked as paid');renderPage('fines');}
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: PAYOUT CALCULATOR
+═══════════════════════════════════════════════ */
+function rPayout(el){
+  const canApprove=['chairperson','treasurer'].includes(currentUser.role);
+  const pool=poolTotal();
+  const maxPayout=Math.round(pool*0.8);
+  const totalPaid=totalContrib();
+  const payoutData=MEMBERS.map(m=>{
+    const share=totalPaid>0?(m.paid2025/totalPaid):0;
+    const gross=Math.round(maxPayout*share);
+    const loanDeduct=LOANS.filter(l=>l.memberId===m.id&&l.status!=='repaid').reduce((s,l)=>s+(l.total-l.repaid),0);
+    const fineDeduct=FINES.filter(f=>f.memberId===m.id&&!f.paid).reduce((s,f)=>s+f.amount,0);
+    const net=Math.max(0,gross-loanDeduct-fineDeduct);
+    return{...m,share:Math.round(share*100),gross,loanDeduct,fineDeduct,net};
+  }).sort((a,b)=>b.net-a.net);
+
+  el.innerHTML=`
+    <div class="alert info"><span class="alert-ico">ⓘ</span><div><div class="alert-title">Annual payout — §14 rules applied</div>Max 80% of pool distributed. Outstanding loans and fines deducted per member. Requires two executive signatures. Financial year ends 30 November.</div></div>
+    <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card"><div class="sc-lbl">Pool Value</div><div class="sc-val"><small>R</small>${Math.round(pool/1000)}k</div><div class="sc-sub">Live calculation</div></div>
+      <div class="stat-card"><div class="sc-lbl">Max Payout (80%)</div><div class="sc-val"><small>R</small>${Math.round(maxPayout/1000)}k</div><div class="sc-sub warn">§14 cap applied</div></div>
+      <div class="stat-card"><div class="sc-lbl">Retained (20%)</div><div class="sc-val"><small>R</small>${Math.round((pool-maxPayout)/1000)}k</div><div class="sc-sub">Next cycle seed</div></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Member Payout Breakdown</div><button class="card-act" onclick="toast('📥 Payout schedule exported')">Export PDF</button></div>
+      ${payoutData.map(m=>`
+        <div class="payout-row">
+          <div class="payout-member"><div class="av" style="background:linear-gradient(135deg,${m.color});width:26px;height:26px;font-size:9px">${m.init}</div>${m.name}<span class="badge b-muted" style="margin-left:4px">${m.share}%</span></div>
+          <div style="text-align:right">
+            <div class="payout-net" style="color:${m.net>0?'var(--gold)':'var(--red)'}">R${m.net.toLocaleString()}</div>
+            ${m.loanDeduct+m.fineDeduct>0?`<div style="font-size:9px;color:var(--red)">-R${(m.loanDeduct+m.fineDeduct).toLocaleString()} deductions</div>`:''}
+          </div>
+        </div>`).join('')}
+      <div class="payout-total-row">
+        <span style="font-weight:700;font-size:13px">Total to be paid out</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--gold)">R${payoutData.reduce((s,m)=>s+m.net,0).toLocaleString()}</span>
+      </div>
+    </div>
+    ${canApprove?`
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Approve Payout</div></div>
+      <div class="alert warn"><span class="alert-ico">⚠</span><div><div class="alert-title">Dual executive sign-off required (§16)</div>Both the Chairperson and Treasurer must approve before disbursement. This action is irreversible.</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px">
+        <div style="background:var(--s2);border-radius:9px;padding:12px;border:1px solid var(--border);text-align:center">
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Chairperson</div>
+          <span class="badge b-red">Pending</span>
+        </div>
+        <div style="background:var(--s2);border-radius:9px;padding:12px;border:1px solid var(--border);text-align:center">
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Treasurer</div>
+          <span class="badge b-red">Pending</span>
+        </div>
+      </div>
+      <button class="btn btn-gold" onclick="confirmAction('Sign off on the annual payout?','You are adding your executive signature. A second signature is still required before disbursement.','Sign Off',()=>{AUDIT_LOG.unshift({who:currentUser.nick+' ('+currentUser.roleLabel+')',action:'Signed off annual payout — pending second exec signature',when:new Date().toLocaleDateString(\'en-ZA\',{day:\'numeric\',month:\'short\',year:\'numeric\'})});toast('✅ Signature recorded — awaiting second executive sign-off');renderPage(\'payout\')})">Sign Off — ${currentUser.roleLabel}</button>
+    </div>`:''}`;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: VOTES
+═══════════════════════════════════════════════ */
+function rVotes(el){
+  const canCreate=['chairperson','secretary'].includes(currentUser.role);
+  const open=VOTES.filter(v=>v.status==='open'), closed=VOTES.filter(v=>v.status==='closed');
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Active Votes</div>${canCreate?`<button class="btn btn-gold btn-sm" onclick="openModal('newVote')">+ New Vote</button>`:''}</div>
+      ${open.map(v=>voteCard(v)).join('')||'<div style="text-align:center;padding:18px;font-size:12px;color:var(--text3)">No active votes.</div>'}
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Vote History</div></div>
+      ${closed.map(v=>voteCard(v)).join('')}
+    </div>`;
+}
+
+function voteCard(v){
+  const yesPct=Math.round((v.yes/v.total)*100), noPct=Math.round((v.no/v.total)*100);
+  return `<div class="vc">
+    <div class="vc-title">${v.title}</div>
+    <div class="vc-meta">${v.deadline} · ${v.yes+v.no}/${v.total} votes · <span class="badge b-muted">${v.type==='simple'?'Simple majority':'2/3 required'}</span></div>
+    ${v.status==='open'?`<div class="vc-opts"><button class="vc-opt${userVotes[v.id]==='yes'?' sel':''}" onclick="castVote('${v.id}','yes',this)">✓ Yes</button><button class="vc-opt${userVotes[v.id]==='no'?' sel':''}" onclick="castVote('${v.id}','no',this)">✗ No</button></div>`:''}
+    <div class="vc-row"><span class="vc-lbl">Yes</span><div class="vc-track"><div class="vc-bar" style="width:${yesPct}%"></div></div><span class="vc-pct" style="color:var(--green)">${yesPct}%</span></div>
+    <div class="vc-row"><span class="vc-lbl">No</span><div class="vc-track"><div class="vc-bar no" style="width:${noPct}%"></div></div><span class="vc-pct" style="color:var(--red)">${noPct}%</span></div>
+    <div style="margin-top:8px;display:flex;gap:6px"><span class="badge ${v.status==='open'?'b-amber':'b-green'}">${v.status==='open'?'Open':'Passed'}</span><span style="font-size:9px;color:var(--text3)">Quorum: 2/3 of all members</span></div>
+  </div>`;
+}
+
+function castVote(id,choice){
+  const v=VOTES.find(x=>x.id===id); if(!v)return;
+  if(userVotes[id]===choice){return;}
+  if(userVotes[id]){if(userVotes[id]==='yes')v.yes--;else v.no--;}
+  userVotes[id]=choice;
+  if(choice==='yes')v.yes++;else v.no++;
+  AUDIT_LOG.unshift({who:currentUser.nick,action:`Cast vote ${choice.toUpperCase()} on: "${v.title}"`,when:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})});
+  renderPage('votes');toast(`◐ Vote cast — ${choice.toUpperCase()}`);
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: MEETINGS
+═══════════════════════════════════════════════ */
+function rMeetings(el){
+  const canManage=['chairperson','secretary'].includes(currentUser.role);
+  const upcoming=MEETINGS.filter(m=>m.status==='upcoming'), past=MEETINGS.filter(m=>m.status==='past');
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Upcoming Meetings</div>${canManage?`<button class="btn btn-gold btn-sm" onclick="openModal('scheduleMeeting')">+ Schedule</button>`:''}</div>
+      ${upcoming.map(m=>meetingCard(m,canManage)).join('')||'<div style="text-align:center;padding:18px;font-size:12px;color:var(--text3)">No upcoming meetings scheduled.</div>'}
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Past Meetings & Minutes</div></div>
+      ${past.map(m=>meetingCard(m,canManage)).join('')}
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Financial Reports Archive</div></div>
+      ${[['Q1 2026 Financial Report','Mar 7, 2026','Quarterly'],['Annual Report — Nov 2025','Nov 30, 2025','Annual'],['AGM Summary — Sept 2025','Sept 13, 2025','AGM'],['Mid-Year Report — May 2025','May 3, 2025','Quarterly'],['Annual Report — Nov 2024','Nov 30, 2024','Annual']].map(([lbl,date,type])=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+          <div><div style="font-size:12px;font-weight:700;margin-bottom:1px">${lbl}</div><div style="font-size:10px;color:var(--text3)">${date}</div></div>
+          <div style="display:flex;gap:6px;align-items:center"><span class="badge b-muted">${type}</span><button class="btn btn-ghost btn-sm" onclick="toast('📄 Opening ${lbl}...')">View PDF</button></div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function meetingCard(m,canManage){
+  return `<div style="background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:13px;margin-bottom:9px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px">
+      <div><div style="font-size:13px;font-weight:700;margin-bottom:2px">${m.title}</div>
+      <div style="font-size:10px;color:var(--text3)">${m.date} · ${m.time} · ${m.venue}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+        <span class="badge ${m.status==='upcoming'?'b-gold':'b-muted'}">${m.status}</span>
+        <span class="badge ${m.type==='formal'?'b-amber':'b-muted'}">${m.type}</span>
+      </div>
+    </div>
+    <div style="margin-bottom:9px">
+      <div style="font-size:8px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:5px;font-weight:600">Agenda</div>
+      ${m.agenda.map((a,i)=>`<div style="font-size:11px;display:flex;gap:7px;margin-bottom:3px"><span style="color:var(--gold);font-weight:700;font-size:9px">${i+1}.</span>${a}</div>`).join('')}
+    </div>
+    ${m.minutes?`<div style="background:rgba(201,168,76,.05);border-radius:7px;padding:9px;border:1px solid var(--border);margin-bottom:9px;font-size:11px;color:var(--text2);line-height:1.4"><div style="font-size:8px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:4px;font-weight:700">Minutes</div>${m.minutes}</div>`:'' }
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:7px">
+      <div style="display:flex;gap:3px;flex-wrap:wrap">
+        ${m.attendees.map(a=>`<div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--gold-d),var(--gold));display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--deep)">${a}</div>`).join('')}
+        <div style="width:22px;height:22px;border-radius:50%;background:var(--s4);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--text3)">${MEMBERS.length-m.attendees.length>0?'+':''}${MEMBERS.length-m.attendees.length>0?MEMBERS.length-m.attendees.length:''}</div>
+        ${m.status==='past'?`<span class="badge ${m.quorum?'b-green':'b-red'}">${m.quorum?'Quorum ✓':'No quorum'}</span>`:''}
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${m.status==='upcoming'?`<button class="btn btn-ghost btn-sm" onclick="toast('📩 Reminder sent to all members')">Remind All</button>`:''}
+        ${m.status==='upcoming'&&canManage?`<button class="btn btn-ghost btn-sm" onclick="toast('🔗 Link copied')">Copy Link</button>`:''}
+        ${m.status==='past'&&canManage&&!m.minutes?`<button class="btn btn-ghost btn-sm" onclick="openModal('addMinutes')">Add Minutes</button>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: SUGGESTIONS
+═══════════════════════════════════════════════ */
+const CATS=['All','Investment','Governance','Events','Technology','Admin'];
+let userVotesSug={};
+function rSuggestions(el){
+  const canPin=['chairperson','secretary'].includes(currentUser.role);
+  const filtered=activeCategory==='All'?SUGGESTIONS:SUGGESTIONS.filter(s=>s.category===activeCategory);
+  const pinned=filtered.filter(s=>s.pinned), rest=filtered.filter(s=>!s.pinned).sort((a,b)=>b.upvotes-a.upvotes);
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Suggestions & Ideas</div><button class="btn btn-gold btn-sm" onclick="openModal('addSuggestion')">+ Submit</button></div>
+      <div style="font-size:11px;color:var(--text3);line-height:1.5;margin-bottom:12px">Share ideas about investments, governance, events, or anything that can improve The Bafana's. Top suggestions go to the next meeting agenda.</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px">
+        ${CATS.map(c=>`<button onclick="activeCategory='${c}';renderPage('suggestions')" class="btn btn-sm ${activeCategory===c?'btn-gold':'btn-ghost'}">${c}</button>`).join('')}
+      </div>
+      ${pinned.length?`<div style="font-size:8px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin-bottom:7px;font-weight:700">📌 Pinned</div>${pinned.map(s=>sugCard(s,canPin)).join('')}<div style="height:1px;background:var(--border);margin:12px 0"></div>`:'' }
+      ${rest.length?rest.map(s=>sugCard(s,canPin)).join(''):`<div style="text-align:center;padding:18px;font-size:12px;color:var(--text3)">No suggestions in this category yet.</div>`}
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">How It Works</div></div>
+      ${[['◎','Submit anonymously or openly','Your choice every time'],['▲','Upvote ideas you support','Top ideas go to meeting agenda'],['◫','Secretary adds to meetings','Reviewed at the next session'],['✓','Implemented ideas get a badge','Track what changed because of you']].map(([ico,t,s])=>`
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+          <div style="width:26px;height:26px;border-radius:7px;background:var(--gold-faint);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">${ico}</div>
+          <div><div style="font-size:12px;font-weight:700;margin-bottom:1px">${t}</div><div style="font-size:11px;color:var(--text3)">${s}</div></div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function sugCard(s,canPin){
+  const voted=userVotesSug[s.id];
+  return `<div style="background:var(--s2);border:1px solid ${s.pinned?'rgba(201,168,76,.3)':'var(--border)'};border-radius:9px;padding:13px;margin-bottom:9px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px;gap:8px">
+      <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+        <div style="width:24px;height:24px;border-radius:50%;background:${s.color?`linear-gradient(135deg,${s.color})`:'var(--s4)'};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${s.color?'var(--deep)':'var(--text3)'}">${s.avatar}</div>
+        <span style="font-size:11px;font-weight:700">${s.author}</span>
+        <span class="badge b-muted">${s.category}</span>
+        ${s.status==='implemented'?`<span class="badge b-green">Implemented ✓</span>`:''}
+        ${s.pinned?`<span style="font-size:10px;color:var(--gold)">📌</span>`:''}
+      </div>
+      <span style="font-size:9px;color:var(--text3);white-space:nowrap">${s.time}</span>
+    </div>
+    <div style="font-size:12px;line-height:1.6;color:var(--text);margin-bottom:11px">${s.text}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:7px">
+      <button onclick="sugUpvote(${s.id})" style="display:flex;align-items:center;gap:5px;background:${voted?'rgba(201,168,76,.1)':'var(--s3)'};border:1px solid ${voted?'var(--gold)':'var(--border)'};border-radius:7px;padding:4px 11px;cursor:pointer;color:${voted?'var(--gold)':'var(--text3)'};font-size:11px;font-weight:700;transition:all .12s">▲ <span id="sv-${s.id}">${s.upvotes}</span></button>
+      ${canPin?`<button onclick="toast('${s.pinned?'Unpinned':'📌 Pinned'}')" class="btn btn-ghost btn-sm">${s.pinned?'Unpin':'Pin'}</button>`:''}
+    </div>
+  </div>`;
+}
+
+function sugUpvote(id){
+  const s=SUGGESTIONS.find(x=>x.id===id); if(!s)return;
+  if(userVotesSug[id]){s.upvotes--;delete userVotesSug[id];}
+  else{s.upvotes++;userVotesSug[id]=true;}
+  renderPage('suggestions');toast(userVotesSug[id]?'▲ Support added':'Support removed');
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: NOTIFICATIONS
+═══════════════════════════════════════════════ */
+function rNotifications(el){
+  const notifs=[
+    {unread:true,ico:'⚠️',bg:'var(--red-bg)',title:"Pako's loan is overdue",body:"R4,700 still outstanding from Jan 2026. Deadline 30 Nov 2025 passed.",time:"Mar 10, 2026"},
+    {unread:true,ico:'💰',bg:'var(--amber-bg)',title:`${MEMBERS.length-1} members in arrears — March 2026`,body:"Only Ben is in good standing. R550 monthly contributions due.",time:"Mar 1, 2026"},
+    {unread:true,ico:'📊',bg:'var(--gold-faint)',title:"Investment account update",body:"Investment: R46,850. Main: R7,404. Pool: R54,254.",time:"Feb 28, 2026"},
+    {unread:true,ico:'⚡',bg:'var(--red-bg)',title:"Fines outstanding — R1,000 total",body:"Solomon: R250, Karabo: R750. Will be deducted from payout.",time:"Feb 15, 2026"},
+    {unread:false,ico:'✅',bg:'var(--green-bg)',title:"Papi's loan fully repaid",body:"R1,300 received (incl. 30% interest). Pool updated.",time:"Feb 10, 2026"},
+    {unread:false,ico:'🗳️',bg:'var(--blue-bg)',title:"Vote opened: Team-building trip",body:"Cast your vote before March 20, 2026.",time:"Mar 5, 2026"},
+  ];
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Alerts <span style="font-size:11px;color:var(--text3);font-family:'DM Sans',sans-serif;font-weight:400">(${notifs.filter(n=>n.unread).length} unread)</span></div>
+        <button class="card-act" onclick="toast('✓ All marked as read')">Mark all read</button></div>
+      ${notifs.map(n=>`<div class="ni${n.unread?' unread':''}"><div class="ni-ico" style="background:${n.bg}">${n.ico}</div>
+        <div><div class="ni-title">${n.title}</div><div class="ni-body">${n.body}</div><div class="ni-time">${n.time}</div></div></div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Send Group Message</div></div>
+      <div class="fg"><label class="fl">Recipients</label><select class="fi"><option>All Members</option><option>Members in Arrears</option><option>Specific member...</option></select></div>
+      <div class="fg"><label class="fl">Message</label><textarea class="fi" id="gMsg" placeholder="Type your message..."></textarea></div>
+      <div class="btn-row">
+        <button class="btn btn-gold" onclick="sendMsg()">Send Message</button>
+        <button class="btn btn-ghost" onclick="toast('📩 Payment reminder sent to all members in arrears')">Send Reminder</button>
+      </div>
+    </div>`;
+}
+
+function sendMsg(){
+  const m=document.getElementById('gMsg')?.value?.trim();
+  if(!m){toast('⚠ Please type a message');return;}
+  document.getElementById('gMsg').value='';
+  AUDIT_LOG.unshift({who:`${currentUser.nick}`,action:`Sent group message to members`,when:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})});
+  toast('✉️ Message sent to all members');
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: REPORTS
+═══════════════════════════════════════════════ */
+function rReports(el){
+  el.innerHTML=`
+    <div class="two-col">
+      <div class="card">
+        <div class="card-hd"><div class="card-title">Financial Summary</div><button class="card-act" onclick="toast('📄 PDF generated')">Export</button></div>
+        ${[['Investment Account','R46,850.26',''],['Main Account','R7,404.22',''],['2025 Contributions','+R'+totalContrib().toLocaleString(),'var(--green)'],['Outstanding Fines','-R'+FINES.filter(f=>!f.paid).reduce((s,f)=>s+f.amount,0),'var(--red)'],['Active Loans (outstanding)','-R'+LOANS.filter(l=>l.status!=='repaid').reduce((s,l)=>s+(l.total-l.repaid),0),'var(--red)']].map(([l,v,c])=>`
+          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.035);font-size:12px">
+            <span style="color:var(--text3)">${l}</span><span style="font-weight:700${c?`;color:${c}`:''}">${v}</span>
+          </div>`).join('')}
+        <div style="background:var(--gold-faint);border-radius:8px;padding:12px;margin-top:12px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3)">Pool Value</span>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--gold)">R${Math.round(poolTotal()).toLocaleString()}</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-title">Member Equity</div><button class="card-act" onclick="toast('📥 CSV exported')">Export</button></div>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Member</th><th>Paid</th><th>Share</th></tr></thead>
+          <tbody>${[...MEMBERS].sort((a,b)=>b.paid2025-a.paid2025).map(m=>`<tr>
+            <td style="font-weight:700">${m.name}</td>
+            <td style="color:${m.paid2025>0?'var(--green)':'var(--red)'};font-weight:700">R${m.paid2025.toLocaleString()}</td>
+            <td><span class="badge ${m.standing?'b-green':'b-muted'}">${totalContrib()>0?Math.round((m.paid2025/totalContrib())*100):0}%</span></td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Download Reports</div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">
+        ${[['📊','Monthly Statement','PDF + CSV'],['👥','Member Equity','PDF + CSV'],['🏦','Loans Register','PDF + CSV'],['⚡','Fines Register','PDF + CSV'],['📋','Annual Report','Full year'],['📜','Share Certificates','Per member'],['🧾','Joining Fee Ledger','Admin income'],['📅','Attendance Register','All meetings']].map(([ico,t,s])=>`
+          <button onclick="toast('📄 Generating ${t}...')" style="background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:3px;align-items:flex-start;cursor:pointer;transition:background .12s;text-align:left" onmouseover="this.style.background='var(--s3)'" onmouseout="this.style.background='var(--s2)'">
+            <span style="font-size:16px">${ico}</span>
+            <span style="font-size:11px;font-weight:700;color:var(--text)">${t}</span>
+            <span style="font-size:9px;color:var(--text3)">${s}</span>
+          </button>`).join('')}
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: AUDIT TRAIL
+═══════════════════════════════════════════════ */
+function rAudit(el){
+  el.innerHTML=`
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Audit Trail <span style="font-size:11px;color:var(--text3);font-family:'DM Sans',sans-serif;font-weight:400">(${AUDIT_LOG.length} entries)</span></div><button class="card-act" onclick="toast('📥 Audit log exported')">Export CSV</button></div>
+      <div class="alert info"><span class="alert-ico">ⓘ</span><div>All actions recorded with actor, description, and timestamp. This log supports §22 dispute resolution. Entries cannot be deleted.</div></div>
+      ${AUDIT_LOG.map(a=>`<div class="audit-item"><span class="audit-who">${a.who.split(' ')[0]}</span><span class="audit-action">${a.action}</span><span class="audit-when">${a.when}</span></div>`).join('')}
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: DISPUTES
+═══════════════════════════════════════════════ */
+function rDisputes(el){
+  const canManage=['chairperson','secretary'].includes(currentUser.role);
+  el.innerHTML=`
+    <div class="alert info"><span class="alert-ico">ⓘ</span><div><div class="alert-title">§22 Dispute Resolution</div>Any party has 14 days to respond. If unresolved after 28 days, the matter proceeds to arbitration under South African law. All disputes must be in writing.</div></div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Active Disputes</div><button class="btn btn-gold btn-sm" onclick="openModal('raiseDispute')">+ Raise Dispute</button></div>
+      ${DISPUTES.length?DISPUTES.map(d=>`<div class="dispute-item">...</div>`).join(''):`<div style="text-align:center;padding:24px;color:var(--text3);font-size:12px">No active disputes — the group is in good standing.</div>`}
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Process</div></div>
+      ${[['1','Raise dispute in writing','14 days for response'],['2','Written response required','14 days to settle'],['3','If settled','Recorded and binding'],['4','If unresolved','Proceeds to arbitration'],['5','Arbitration','South African law applies — costs shared equally']].map(([n,t,s])=>`
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+          <div style="width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--gold);flex-shrink:0">${n}</div>
+          <div><div style="font-size:12px;font-weight:700;margin-bottom:1px">${t}</div><div style="font-size:11px;color:var(--text3)">${s}</div></div>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: PROFILE
+═══════════════════════════════════════════════ */
+function rProfile(el){
+  const u=currentUser;
+  el.innerHTML=`
+    <div class="card">
+      <div class="profile-av-wrap">
+        <div class="profile-av-lg" style="background:linear-gradient(135deg,${u.color})">${u.init}</div>
+        <div class="profile-name">${u.name}</div>
+        <div class="profile-role">${u.roleLabel}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Personal Details</div><button class="card-act" onclick="openModal('editProfile')">Edit</button></div>
+      ${[['Email',u.email],['Phone',u.phone],['City',u.city]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px"><span style="color:var(--text3)">${l}</span><span style="font-weight:600">${v||'—'}</span></div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Banking Details</div><button class="card-act" onclick="openModal('editProfile')">Update</button></div>
+      ${[['Bank',u.bank],['Account Number',u.acc],['Branch Code',u.branch]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px"><span style="color:var(--text3)">${l}</span><span style="font-weight:600">${v||'Not set'}</span></div>`).join('')}
+      ${!u.fica.bank?`<div class="alert warn" style="margin-top:12px"><span class="alert-ico">⚠</span><div>Banking details required for payout eligibility. Update to ensure you receive your annual payout.</div></div>`:''}
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">FICA / KYC Documents</div></div>
+      ${[['SA ID Document',u.fica.id,'id'],['Proof of Residence',u.fica.proof,'proof'],['Banking Details Verified',u.fica.bank,'bank']].map(([l,ok,key])=>`
+        <div class="fica-status">
+          <span class="fica-lbl">${l}</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge ${ok?'b-green':'b-red'}">${ok?'Verified':'Pending'}</span>
+            ${!ok?`<button class="btn btn-ghost btn-sm" onclick="uploadFica('${key}')">Upload</button>`:''}
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">Account Actions</div></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="toast('📩 Password reset email sent')">Reset Password</button>
+        <button class="btn btn-danger" onclick="openModal('logout')">Sign Out</button>
+      </div>
+    </div>`;
+}
+
+function uploadFica(key){
+  confirmAction(`Upload ${key==='id'?'SA ID Document':key==='proof'?'Proof of Residence':'Banking Confirmation'}?`,
+    'Your document will be reviewed by the Secretary before being marked as verified.',
+    'Upload',
+    ()=>{currentUser.fica[key]=true;AUDIT_LOG.unshift({who:currentUser.nick,action:`Uploaded FICA document: ${key}`,when:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})});toast('📎 Document uploaded — pending verification');renderPage('profile');});
+}
+
+/* ═══════════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════════ */
+const MODALS={
+  addMember:{
+    title:'Add New Member',sub:'Must be 21+, supply FICA details, and pay R500 non-refundable joining fee (§12).',
+    html:`<div class="fg2">
+      <div class="fg"><label class="fl">Full Name</label><input class="fi" id="nm-name" placeholder="Full name"></div>
+      <div class="fg"><label class="fl">Nickname</label><input class="fi" placeholder="e.g. TK"></div>
+      <div class="fg"><label class="fl">SA ID Number</label><input class="fi" placeholder="13-digit ID"></div>
+      <div class="fg"><label class="fl">Date of Birth</label><input class="fi" type="date"></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" type="email"></div>
+      <div class="fg"><label class="fl">Phone</label><input class="fi" type="tel" placeholder="+27 82 000 0000"></div>
+      <div class="fg"><label class="fl">City</label><input class="fi" placeholder="City"></div>
+      <div class="fg"><label class="fl">Contribution</label><select class="fi"><option>Option A — R550/month</option><option>Option B — R1,050/month</option></select></div>
+      <div class="fg"><label class="fl">Role</label><select class="fi"><option>Member</option><option>Treasurer</option><option>Secretary</option><option>Organiser</option></select></div>
+      <div class="fg"><label class="fl">Gender</label><select class="fi"><option>Male</option><option>Female</option><option>Other</option></select></div>
+    </div>`,
+    action:'Send Invite & Invoice R500',fn:"addMemberAction()"
+  },
+  editProfile:{
+    title:'Edit Profile',sub:'Update your personal details and banking information. Changes are logged for the audit trail.',
+    html:`<div class="fg2">
+      <div class="fg"><label class="fl">Phone</label><input class="fi" type="tel" id="ep-phone" value="${()=>currentUser?.phone||''}"></div>
+      <div class="fg"><label class="fl">City</label><input class="fi" id="ep-city"></div>
+      <div class="fg"><label class="fl">Bank</label><select class="fi" id="ep-bank"><option>Nedbank</option><option>FNB</option><option>ABSA</option><option>Standard Bank</option><option>Capitec</option></select></div>
+      <div class="fg"><label class="fl">Account Number</label><input class="fi" id="ep-acc" placeholder="Account number"></div>
+    </div>
+    <div class="fg"><label class="fl">Branch Code</label><input class="fi" id="ep-branch" placeholder="Branch code"></div>`,
+    action:'Save Changes',fn:"saveProfile()"
+  },
+  uploadPop:{
+    title:'Upload Proof of Payment',sub:'Reference format: NAME MONTH YEAR (e.g. PAPI MAR 2026).',
+    html:`<div class="fg2">
+      <div class="fg"><label class="fl">Month</label><select class="fi"><option>March 2026</option><option>February 2026</option><option>January 2026</option></select></div>
+      <div class="fg"><label class="fl">Amount (R)</label><input class="fi" type="number" value="550"></div>
+    </div>
+    <div class="fg"><label class="fl">Reference</label><input class="fi" placeholder="e.g. PAPI MAR 2026"></div>
+    <div style="border:2px dashed var(--border);border-radius:9px;padding:20px;text-align:center;cursor:pointer;background:var(--s2)" onclick="toast('📎 File picker opened')">
+      <div style="font-size:20px;margin-bottom:5px">📎</div>
+      <div style="font-size:12px;font-weight:700">Tap to upload screenshot or PDF</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:2px">Max 10MB · JPG, PNG, PDF</div>
+    </div>
+    <div class="alert info" style="margin-top:11px"><span class="alert-ico">🏦</span><div>Nedbank Savings · <strong>2031834045</strong> · Branch 117134 · The Bafana's Stokvel</div></div>`,
+    action:'Submit for Approval',fn:"toast('✅ Proof submitted — Treasurer will confirm within 24hrs');closeModal()"
+  },
+  addFine:{
+    title:'Issue Fine',sub:'Fine added to member ledger. Will be deducted from year-end payout calculation.',
+    html:`<div class="fg"><label class="fl">Member</label><select class="fi">${MEMBERS.map(m=>`<option>${m.name}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Offence</label><select class="fi"><option>Late contribution — R50</option><option>Absence without apology — R150</option><option>Disrespectful behaviour — R100</option><option>Late coming to meeting — R250</option><option>Not hosting when scheduled — R500</option><option>Admin-related offence — R250</option><option>Unruly behaviour — R250</option></select></div>
+    <div class="fg"><label class="fl">Date</label><input class="fi" type="date"></div>
+    <div class="fg"><label class="fl">Notes (optional)</label><textarea class="fi" placeholder="Additional context..."></textarea></div>`,
+    action:'Issue Fine',fn:"confirmAction('Issue this fine?','This will be added to the member ledger and deducted from their payout.','Issue Fine',()=>{AUDIT_LOG.unshift({who:currentUser.nick,action:'Issued fine — see fines register',when:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})});toast('⚡ Fine issued and logged');closeModal();})"
+  },
+  requestLoan:{
+    title:'Request a Loan',sub:`Max ${maxLoan().toLocaleString()} (25% of pool). >R10k triggers member vote. Repaid by 30 November. 35% p.a.`,
+    html:`<div class="fg2">
+      <div class="fg"><label class="fl">Amount (R)</label><input class="fi" type="number" id="rl-amt" placeholder="Amount"></div>
+      <div class="fg"><label class="fl">Type</label><select class="fi"><option>Personal</option><option>Non-member (I am guarantor)</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">Purpose</label><textarea class="fi" placeholder="Describe the loan purpose..."></textarea></div>`,
+    action:'Submit Request',fn:"toast('✅ Loan request submitted for approval');closeModal()"
+  },
+  newVote:{
+    title:'Create Vote',sub:'Simple majority to pass. Constitutional changes need 2/3 of all members + 60 days notice (§19).',
+    html:`<div class="fg"><label class="fl">Title</label><input class="fi" placeholder="e.g. Approve team-building budget"></div>
+    <div class="fg"><label class="fl">Description</label><textarea class="fi" placeholder="Describe the proposal..."></textarea></div>
+    <div class="fg2">
+      <div class="fg"><label class="fl">Vote Type</label><select class="fi"><option>Simple Majority</option><option>Two-thirds vote</option><option>Constitutional change (+60 days notice)</option></select></div>
+      <div class="fg"><label class="fl">Deadline</label><input class="fi" type="date"></div>
+    </div>
+    <div class="alert info"><span class="alert-ico">ⓘ</span><div>Quorum: 2/3 of members must vote. Each member gets one vote. Electronic voting authorised by §9.</div></div>`,
+    action:'Open Vote',fn:"toast('◐ Vote opened — all members notified');closeModal()"
+  },
+  scheduleMeeting:{
+    title:'Schedule Meeting',sub:'All members notified immediately. Formal meetings require 2/3 quorum for resolutions.',
+    html:`<div class="fg"><label class="fl">Title</label><input class="fi" placeholder="e.g. Monthly Check-in — April 2026"></div>
+    <div class="fg2">
+      <div class="fg"><label class="fl">Date</label><input class="fi" type="date"></div>
+      <div class="fg"><label class="fl">Time</label><input class="fi" type="time" value="15:30"></div>
+    </div>
+    <div class="fg"><label class="fl">Venue / Platform</label><input class="fi" placeholder="Residence address or MS Teams link"></div>
+    <div class="fg"><label class="fl">Meeting Type</label><select class="fi"><option>Informal (monthly check-in)</option><option>Formal (AGM / special)</option></select></div>
+    <div class="fg"><label class="fl">Agenda Items (one per line)</label><textarea class="fi" style="min-height:80px" placeholder="Financial report&#10;Contribution status&#10;Any new business"></textarea></div>`,
+    action:'Schedule & Notify All',fn:"toast('📅 Meeting scheduled — all members notified');closeModal()"
+  },
+  addMinutes:{
+    title:'Add Meeting Minutes',sub:'Minutes accessible to all members. Stored in the meeting record permanently.',
+    html:`<div class="fg"><label class="fl">Key Decisions</label><textarea class="fi" placeholder="List decisions and resolutions..."></textarea></div>
+    <div class="fg"><label class="fl">Action Items</label><textarea class="fi" placeholder="Who does what by when..."></textarea></div>
+    <div class="fg"><label class="fl">Next Meeting Date</label><input class="fi" type="date"></div>`,
+    action:'Save Minutes',fn:"toast('✅ Minutes saved and shared with all members');closeModal()"
+  },
+  addSuggestion:{
+    title:'Submit a Suggestion',sub:'Shared with the group. Top suggestions go to the next meeting agenda.',
+    html:`<div class="fg"><label class="fl">Category</label><select class="fi"><option>Investment</option><option>Governance</option><option>Events</option><option>Technology</option><option>Admin</option></select></div>
+    <div class="fg"><label class="fl">Suggestion</label><textarea class="fi" style="min-height:90px" placeholder="Describe your idea clearly..."></textarea></div>
+    <div class="fg"><label class="fl">Post as</label><select class="fi"><option>Anonymous</option><option id="sugNameOpt">My Name</option></select></div>`,
+    action:'Submit',fn:"toast('✅ Suggestion submitted');closeModal()"
+  },
+  raiseDispute:{
+    title:'Raise a Dispute',sub:'§22: All disputes must be in writing. Each party has 14 days to respond, then 14 days to settle.',
+    html:`<div class="fg"><label class="fl">Subject</label><input class="fi" placeholder="Brief description of the dispute"></div>
+    <div class="fg"><label class="fl">Party Involved</label><select class="fi">${MEMBERS.map(m=>`<option>${m.name}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Full Description</label><textarea class="fi" style="min-height:90px" placeholder="Describe the issue in detail..."></textarea></div>
+    <div class="alert warn"><span class="alert-ico">⚠</span><div>This is a formal legal process under South African law. Please only raise genuine disputes. The other party has 14 days to respond in writing.</div></div>`,
+    action:'Submit Dispute',fn:"toast('📋 Dispute submitted — 14-day response window started');closeModal()"
+  },
+  recordContrib:{
+    title:'Record Contribution',sub:'Record a member payment. Automatically generates a receipt and updates member standing.',
+    html:`<div class="fg2">
+      <div class="fg"><label class="fl">Member</label><select class="fi">${MEMBERS.map(m=>`<option>${m.name}</option>`).join('')}</select></div>
+      <div class="fg"><label class="fl">Amount (R)</label><input class="fi" type="number" value="550"></div>
+      <div class="fg"><label class="fl">Month</label><select class="fi"><option>March 2026</option><option>February 2026</option></select></div>
+      <div class="fg"><label class="fl">Method</label><select class="fi"><option>EFT</option><option>SnapScan</option><option>Cash</option></select></div>
+    </div>`,
+    action:'Record & Issue Receipt',fn:"toast('✅ Contribution recorded — receipt issued');closeModal()"
+  },
+  logout:{
+    title:'Sign out?',sub:'',
+    html:`<p style="font-size:12px;color:var(--text3)">You will be returned to the login screen.</p>`,
+    action:'Sign Out',fn:"logout()",danger:true
+  }
+};
+
+function openModal(key){
+  const m=MODALS[key]; if(!m)return;
+  if(key==='logout')m.sub=`Signed in as ${currentUser?.nick||''}.`;
+  if(key==='editProfile'){
+    m.html=m.html.replace(/value="[^"]*"/,'value="'+(currentUser?.phone||'')+'"');
+  }
+  if(key==='sugNameOpt'){document.getElementById('sugNameOpt').textContent=currentUser?.name||'My Name';}
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-title">${m.title}</div>
+    <div class="modal-sub">${m.sub}</div>
+    ${m.html}
+    <div class="modal-acts">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn ${m.danger?'btn-danger':'btn-gold'}" onclick="${m.fn}">${m.action}</button>
+    </div>`;
+  if(key==='sugNameOpt'){const el=document.getElementById('sugNameOpt');if(el)el.textContent=currentUser?.name||'My Name';}
+  document.getElementById('modalBg').classList.add('show');
+}
+
+function closeModal(){document.getElementById('modalBg').classList.remove('show');}
+function closeModalOut(e){if(e.target===document.getElementById('modalBg'))closeModal();}
+
+function addMemberAction(){
+  const name=document.getElementById('nm-name')?.value?.trim()||'New Member';
+  AUDIT_LOG.unshift({who:`${currentUser.nick}`,action:`Added new member: ${name} — R500 joining fee invoiced`,when:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})});
+  toast('✅ Invite sent — R500 joining fee invoiced');
+  closeModal();
+}
+
+function saveProfile(){
+  const phone=document.getElementById('ep-phone')?.value;
+  const bank=document.getElementById('ep-bank')?.value;
+  const acc=document.getElementById('ep-acc')?.value;
+  if(phone)currentUser.phone=phone;
+  if(bank)currentUser.bank=bank;
+  if(acc){currentUser.acc=acc;currentUser.fica.bank=true;}
+  AUDIT_LOG.unshift({who:currentUser.nick,action:'Updated personal profile and banking details',when:new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})});
+  toast('✅ Profile updated');
+  closeModal();
+  renderPage('profile');
+}
+
+/* ═══════════════════════════════════════════════
+   CONFIRM DIALOG
+═══════════════════════════════════════════════ */
+let confirmCallback=null;
+function confirmAction(title,msg,actionLabel,callback){
+  confirmCallback=callback;
+  document.getElementById('confirmBox').innerHTML=`
+    <div class="confirm-ico">⚠️</div>
+    <div class="confirm-title">${title}</div>
+    <div class="confirm-msg">${msg}</div>
+    <div class="confirm-acts">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-gold" onclick="doConfirm()">${actionLabel}</button>
+    </div>`;
+  document.getElementById('confirmBg').classList.add('show');
+}
+function doConfirm(){if(confirmCallback)confirmCallback();closeConfirm();}
+function closeConfirm(){document.getElementById('confirmBg').classList.remove('show');confirmCallback=null;}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR MOBILE
+═══════════════════════════════════════════════ */
+function openSb(){document.getElementById('sidebar').classList.add('mob-open');document.getElementById('sbOv').classList.add('show');}
+function closeSb(){document.getElementById('sidebar').classList.remove('mob-open');document.getElementById('sbOv').classList.remove('show');}
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+function toast(msg){
+  const t=document.getElementById('toastEl');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ═══════════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════════ */
+function logout(){
+  currentUser=null;userVotes={};userVotesSug={};activeCategory='All';
+  switchScreen('scApp','scLogin');
+  document.getElementById('lgEmail').value='';
+  document.getElementById('lgPwd').value='';
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+runSplash();
+</script>
 </body>
 </html>
