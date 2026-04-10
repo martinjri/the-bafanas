@@ -462,9 +462,22 @@ const MOS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','De
 const SNAPSHOTS=[{date:'Mar 2025',main:7955,invest:28996},{date:'May 2025',main:4370,invest:46353},{date:'Jul 2025',main:7404,invest:46850}];
 
 const LOANS=[
-  {id:'L001',member:'Pako Moeti',memberId:'pako',init:'PM',color:'#6B3FA0,#3D1F6B',principal:5000,issued:'Jan 30, 2026',rate:30,total:6500,repaid:1800,status:'overdue',type:'personal',due:'30 Nov 2025'},
-  {id:'L002',member:'Solomon (Papi)',memberId:'solomon',init:'SM',color:'#C9A84C,#8B6914',principal:1000,issued:'Jan 17, 2026',rate:30,total:1300,repaid:1300,status:'repaid',type:'personal',due:'30 Nov 2025'},
+  {id:'L001',member:'Pako Moeti',memberId:'pako',init:'PM',color:'#6B3FA0,#3D1F6B',principal:5000,issued:'Jan 30, 2026',rate:30,total:6500,repaid:1800,status:'overdue',type:'personal',due:'30 Nov 2025',
+   reminderDay:15,reminderTime:'09:00',reminderPhone:'+27 84 333 4444',
+   repayments:[
+     {date:'Feb 15, 2026',amount:900,method:'EFT',ref:'PAKO FEB 2026',recorded:'Karabo (Treasurer)'},
+     {date:'Mar 10, 2026',amount:900,method:'EFT',ref:'PAKO MAR 2026',recorded:'Karabo (Treasurer)'},
+   ],
+   agreement:{signed:true,signedDate:'Jan 30, 2026',terms:'R5,000 personal loan at 30% interest. Total due R6,500. Monthly instalments of R650 by the 15th of each month. Full balance by 30 November 2026. Member guarantees repayment. Failure to pay will result in deduction from annual payout.'}},
+  {id:'L002',member:'Solomon (Papi)',memberId:'solomon',init:'SM',color:'#C9A84C,#8B6914',principal:1000,issued:'Jan 17, 2026',rate:30,total:1300,repaid:1300,status:'repaid',type:'personal',due:'30 Nov 2025',
+   reminderDay:17,reminderTime:'08:00',reminderPhone:'+27 82 111 2222',
+   repayments:[
+     {date:'Feb 10, 2026',amount:1300,method:'EFT',ref:'PAPI FEB 2026',recorded:'Karabo (Treasurer)'},
+   ],
+   agreement:{signed:true,signedDate:'Jan 17, 2026',terms:'R1,000 personal loan at 30% interest. Total due R1,300. Full balance by 30 November 2025. Member guarantees repayment.'}},
 ];
+// Reminder settings keyed by loan id
+const LOAN_REMINDERS={};
 
 const FINES=[
   {id:'F001',member:'Solomon',memberId:'solomon',init:'SM',color:'#C9A84C,#8B6914',reason:'Late contributions',amount:250,date:'Dec 2025',paid:false},
@@ -922,73 +935,319 @@ function sendWhatsAppReminder(){
 /* ═══════ PAGE: LOANS ════════════════════════════════════════ */
 function rLoans(el){
   const canApprove=['chairperson','treasurer'].includes(curUser.role);
+  const isMember=curUser.role==='member';
   const maxL=maxLoan();
+  const myLoans=isMember?LOANS.filter(l=>l.memberId===curUser.id):LOANS;
+  const overdue=LOANS.filter(l=>l.status==='overdue');
+
   el.innerHTML=`
     <div class="stats" style="grid-template-columns:repeat(3,1fr)">
-      <div class="sc"><div class="sc-lbl">Active Loans</div><div class="sc-val">${LOANS.filter(l=>l.status!=='repaid').length}</div><div class="sc-sub dn">Pako overdue</div></div>
+      <div class="sc"><div class="sc-lbl">Active Loans</div><div class="sc-val">${LOANS.filter(l=>l.status!=='repaid').length}</div><div class="sc-sub dn">${overdue.length} overdue</div></div>
       <div class="sc"><div class="sc-lbl">Annual Rate ${tip('§2','Loans carry 35% per annum interest. Repaid by 30 November each year.')}</div><div class="sc-val">35%</div><div class="sc-sub">30% applied 2026</div></div>
-      <div class="sc"><div class="sc-lbl">Max Loan (live) ${tip('§2','Maximum loan per member is 25% of total pool savings')}</div><div class="sc-val"><small>R</small>${Math.round(maxL/1000)}k</div><div class="sc-sub">25% of ${fmtR(Math.round(poolTotal()/1000)*1000)}</div></div>
+      <div class="sc"><div class="sc-lbl">Max Loan (live) ${tip('§2','Maximum loan per member is 25% of total pool savings')}</div><div class="sc-val"><small>R</small>${Math.round(maxL/1000)}k</div><div class="sc-sub">25% of pool</div></div>
     </div>
-    <div class="alert danger"><span class="a-ico">⚠</span><div><div class="a-title">Pako's loan is overdue</div>${fmtR(LOANS[0].total-LOANS[0].repaid)} outstanding. Deadline 30 Nov 2025 passed.</div></div>
-    ${LOANS.map(l=>`
-      <div style="background:var(--s2);border:1px solid ${l.status==='overdue'?'rgba(239,68,68,.3)':l.status==='repaid'?'rgba(34,197,94,.2)':'var(--b)'};border-radius:10px;padding:13px;margin-bottom:10px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-          <div><div class="mc" style="margin-bottom:3px"><div class="av" style="background:linear-gradient(135deg,${l.color});width:26px;height:26px;font-size:9px">${l.init}</div><span style="font-weight:700">${l.member}</span></div>
-          <div style="font-size:10px;color:var(--t3)">Ref: ${l.id} · Issued ${l.issued} · Due ${l.due}</div></div>
-          <span class="badge ${l.status==='repaid'?'b-green':l.status==='overdue'?'b-red':'b-amber'}">${l.status}</span>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
-          ${[['Principal',fmtR(l.principal),''],['Interest',l.rate+'%',''],['Total Due',fmtR(l.total),''],['Outstanding',fmtR(l.total-l.repaid),l.total-l.repaid===0?'var(--green)':'var(--red)']].map(([lb,v,c])=>`<div><div style="font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">${lb}</div><div style="font-size:12px;font-weight:700;${c?`color:${c}`:''}">${v}</div></div>`).join('')}
-        </div>
-        <div class="pb-track"><div class="pb-fill ${l.status==='repaid'?'full':'red'}" style="width:${Math.round((l.repaid/l.total)*100)}%"></div></div>
-        <div style="font-size:9px;color:var(--t3);margin-top:3px">${fmtR(l.repaid)} repaid of ${fmtR(l.total)}</div>
-        ${canApprove&&l.status!=='repaid'?`<div class="btn-row"><button class="btn btn-gold btn-sm" onclick="confirmAction('Record repayment for ${l.member}?','This will update the loan balance and audit trail.','Record',()=>{LOANS[0].repaid=LOANS[0].total;LOANS[0].status='repaid';AUDIT_LOG.unshift({who:curUser.nick,action:'Recorded full repayment for loan ${l.id}',when:new Date().toLocaleDateString('en-ZA')});toast('✅ Repayment recorded — loan closed');renderPage('loans')})">Record Repayment</button><button class="btn btn-ghost btn-sm" onclick="viewLoanSchedule('${l.id}')">View Schedule</button><button class="btn btn-ghost btn-sm" style="background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3);color:#25D366" onclick="window.open('https://wa.me/?text='+encodeURIComponent('The Bafana\\'s Stokvel\\n\\nHi ${l.member}, your loan of ${fmtR(l.principal)} (30% interest) has an outstanding balance of ${fmtR(l.total-l.repaid)}.\\n\\nAll loans must be repaid by 30 November.\\nPlease contact Solomon to arrange repayment.'),'_blank')">WhatsApp</button></div>`:''}
-      </div>`).join('')}
+
+    ${overdue.length?`<div class="alert danger"><span class="a-ico">⚠</span><div><div class="a-title">${overdue.length} loan${overdue.length>1?'s':''} overdue</div>${overdue.map(l=>`${l.member}: ${fmtR(l.total-l.repaid)} outstanding — deadline ${l.due} passed`).join(' · ')}</div></div>`:''}
+
+    ${(isMember?myLoans:LOANS).map(l=>loanCard(l,canApprove,isMember)).join('')}
+
+    ${canApprove?`
+    <div class="card">
+      <div class="card-hd"><div class="card-title">All Loan Reminders — Treasurer Overview</div></div>
+      <div class="alert info"><span class="a-ico">ⓘ</span><div>All scheduled WhatsApp reminders across active loans. Send manual reminders or view individual loan details below.</div></div>
+      ${LOANS.filter(l=>l.status!=='repaid').map(l=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+          <div><div class="mc" style="margin-bottom:2px"><div class="av" style="background:linear-gradient(135deg,${l.color});width:22px;height:22px;font-size:8px">${l.init}</div><span style="font-weight:700;font-size:12px">${l.member}</span></div>
+          <div style="font-size:10px;color:var(--t3)">Reminder: ${l.reminderDay?`${l.reminderDay}th of each month at ${l.reminderTime}`:'Not set'} · Outstanding: <span style="color:var(--red);font-weight:700">${fmtR(l.total-l.repaid)}</span></div></div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="openLoanDetail('${l.id}')">Details</button>
+            <button class="btn btn-ghost btn-sm" style="background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3);color:#25D366"
+              onclick="sendLoanWhatsApp('${l.id}','reminder')">📱 Remind</button>
+            ${l.status==='overdue'?`<button class="btn btn-danger btn-sm" onclick="sendLoanWhatsApp('${l.id}','overdue')">⚠ Overdue</button>`:''}
+          </div>
+        </div>`).join('')}
+    </div>`:''}
+
     <div class="card">
       <div class="card-hd"><div class="card-title">New Loan Request ${tip('§17','Loans over R10,000 require a member vote before approval')}</div></div>
       ${!curUser.standing?`<div style="text-align:center;padding:20px;color:var(--t3)"><div style="font-size:28px;opacity:.3;margin-bottom:8px">🔒</div><div style="font-size:13px;font-weight:700;margin-bottom:4px">Not eligible</div><div style="font-size:11px;max-width:240px;margin:auto;line-height:1.5">You must be in good standing — no overdue contributions or fines — to request a loan.</div></div>`:`
       <div class="alert info"><span class="a-ico">ⓘ</span><div>Max: ${fmtR(maxL)} (25% of pool). Loans over R10,000 require a member vote. All loans repaid by 30 November. Interest: 35% p.a.</div></div>
-      <div class="fg2"><div class="fg"><label class="fl">Amount (R)</label><input class="fi" type="number" placeholder="Max ${fmtR(maxL)}" id="lAmt" oninput="loanAmtCheck(this)"></div><div class="fg"><label class="fl">Type</label><select class="fi"><option>Personal</option><option>Non-member (I am guarantor)</option></select></div></div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">Amount (R)</label><input class="fi" type="number" placeholder="Max ${fmtR(maxL)}" id="lAmt" oninput="loanAmtCheck(this)"></div>
+        <div class="fg"><label class="fl">Type</label><select class="fi"><option>Personal</option><option>Non-member (I am guarantor)</option></select></div>
+      </div>
       <div id="loanVoteWarn" style="display:none"><div class="alert warn"><span class="a-ico">⚠</span><div><div class="a-title">Member vote required (§17)</div>This amount exceeds R10,000. Submitting will automatically open a group vote.</div></div></div>
       <div class="fg"><label class="fl">Purpose</label><textarea class="fi" placeholder="Describe the loan purpose..."></textarea></div>
+      <div class="fg2">
+        <div class="fg"><label class="fl">WhatsApp Reminder Day ${tip('Reminders','Set the day of the month and time you want to receive a WhatsApp payment reminder')}</label>
+          <select class="fi" id="lReminderDay">${Array.from({length:28},(_,i)=>`<option value="${i+1}">${i+1}${[1,21].includes(i+1)?'st':[2,22].includes(i+1)?'nd':[3,23].includes(i+1)?'rd':'th'} of each month</option>`).join('')}</select></div>
+        <div class="fg"><label class="fl">Reminder Time</label>
+          <select class="fi" id="lReminderTime"><option value="07:00">07:00 AM</option><option value="08:00">08:00 AM</option><option value="09:00" selected>09:00 AM</option><option value="10:00">10:00 AM</option><option value="12:00">12:00 PM</option><option value="17:00">05:00 PM</option><option value="18:00">06:00 PM</option><option value="19:00">07:00 PM</option></select></div>
+      </div>
+      <div class="fg"><label class="fl">WhatsApp Number for Reminders</label><input class="fi" type="tel" id="lPhone" value="${curUser.phone||''}" placeholder="+27 82 000 0000"></div>
       <button class="btn btn-gold" onclick="submitLoan()">Submit Request</button>`}
     </div>`;
+}
+
+function loanCard(l, canApprove, isMember){
+  const outstanding=l.total-l.repaid;
+  const pct=Math.round((l.repaid/l.total)*100);
+  const myLoan=curUser.memberId===l.memberId||curUser.id===l.memberId;
+  const canSeeDetail=canApprove||myLoan;
+  const months=['Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026'];
+  const monthlyInstalment=Math.ceil(l.total/months.length);
+
+  return `<div style="background:var(--s2);border:1px solid ${l.status==='overdue'?'rgba(239,68,68,.3)':l.status==='repaid'?'rgba(34,197,94,.2)':'var(--b)'};border-radius:12px;padding:16px;margin-bottom:12px" id="lcard-${l.id}">
+
+    <!-- HEADER -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+      <div>
+        <div class="mc" style="margin-bottom:3px">
+          <div class="av" style="background:linear-gradient(135deg,${l.color});width:26px;height:26px;font-size:9px">${l.init}</div>
+          <span style="font-weight:700">${l.member}</span>
+        </div>
+        <div style="font-size:10px;color:var(--t3)">Ref: ${l.id} · Issued ${l.issued} · Due ${l.due}</div>
+      </div>
+      <span class="badge ${l.status==='repaid'?'b-green':l.status==='overdue'?'b-red':'b-amber'}">${l.status}</span>
+    </div>
+
+    <!-- FIGURES -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+      ${[['Principal',fmtR(l.principal),''],['Interest',l.rate+'%',''],['Total Due',fmtR(l.total),''],['Outstanding',fmtR(outstanding),outstanding===0?'var(--green)':'var(--red)']].map(([lb,v,col])=>`<div><div style="font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">${lb}</div><div style="font-size:12px;font-weight:700;${col?`color:${col}`:''}">${v}</div></div>`).join('')}
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="pb-track" style="margin-bottom:4px"><div class="pb-fill ${l.status==='repaid'?'full':'red'}" style="width:${pct}%"></div></div>
+    <div style="font-size:9px;color:var(--t3);margin-bottom:12px">${fmtR(l.repaid)} repaid of ${fmtR(l.total)} (${pct}%)</div>
+
+    <!-- TABS -->
+    <div style="display:flex;border-bottom:1px solid var(--b);margin-bottom:12px;gap:0">
+      ${['Schedule','Repayments','Agreement','Reminders'].map((tab,i)=>`<button onclick="loanTab('${l.id}',${i})" id="ltab-${l.id}-${i}" style="padding:6px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;border:none;background:none;cursor:pointer;border-bottom:2px solid ${i===0?'var(--g)':'transparent'};color:${i===0?'var(--g)':'var(--t3)'};transition:all .12s">${tab}</button>`).join('')}
+    </div>
+
+    <!-- TAB PANELS -->
+    <div id="lpanel-${l.id}">
+      <!-- Panel 0: Schedule (default) -->
+      <div id="lpanel-${l.id}-0">
+        ${buildSchedulePanel(l, months, monthlyInstalment)}
+      </div>
+      <div id="lpanel-${l.id}-1" style="display:none">
+        ${buildRepaymentsPanel(l, canApprove)}
+      </div>
+      <div id="lpanel-${l.id}-2" style="display:none">
+        ${buildAgreementPanel(l)}
+      </div>
+      <div id="lpanel-${l.id}-3" style="display:none">
+        ${buildRemindersPanel(l, canApprove)}
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    ${canApprove&&l.status!=='repaid'?`<div class="btn-row" style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)">
+      <button class="btn btn-gold btn-sm" onclick="openRecordRepayment('${l.id}')">✓ Record Repayment</button>
+      <button class="btn btn-ghost btn-sm" onclick="sendLoanWhatsApp('${l.id}','reminder')">📱 WhatsApp Reminder</button>
+      ${l.status==='overdue'?`<button class="btn btn-danger btn-sm" onclick="sendLoanWhatsApp('${l.id}','overdue')">⚠ Overdue Notice</button>`:''}
+      <button class="btn btn-ghost btn-sm" onclick="toast('📄 Loan statement exported')">Export PDF</button>
+    </div>`:''}
+    ${l.status==='repaid'?`<div style="text-align:center;padding:8px;font-size:11px;color:var(--green);font-weight:700">✓ Loan fully repaid</div>`:''}
+  </div>`;
+}
+
+function buildSchedulePanel(l, months, monthlyInstalment){
+  let running=l.repaid;
+  const today=new Date();
+  return `<div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:8px;font-weight:600">Repayment Schedule — ${months.length} monthly instalments of ${fmtR(monthlyInstalment)}</div>
+  ${months.map((mo,i)=>{
+    const paid=running>=l.total;
+    const isThis=i===0;
+    const isOverdue=l.status==='overdue'&&isThis;
+    const thisAmt=Math.min(monthlyInstalment,l.total-running);
+    const cls=paid?'past':isOverdue?'overdue':isThis?'due':'';
+    if(!paid)running+=thisAmt;
+    return`<div class="amort-row ${cls}">
+      <span style="font-weight:600;width:80px;font-size:11px">${mo}</span>
+      <span style="font-size:11px;color:${paid?'var(--green)':isOverdue?'var(--red)':isThis?'var(--amber)':'var(--t3)'}">${paid?'✓ Paid':isOverdue?'⚠ OVERDUE':isThis?'⚡ Due now':'Upcoming'}</span>
+      <span style="font-weight:700;font-size:11px;color:${paid?'var(--green)':isOverdue?'var(--red)':isThis?'var(--amber)':'var(--t)'}">${paid?'R0':fmtR(thisAmt)}</span>
+    </div>`;
+  }).join('')}
+  <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:12px;font-weight:700;border-top:1px solid var(--b);margin-top:4px">
+    <span>Remaining balance</span><span style="color:${l.status==='repaid'?'var(--green)':'var(--red)'}">${fmtR(l.total-l.repaid)}</span>
+  </div>`;
+}
+
+function buildRepaymentsPanel(l, canApprove){
+  if(!l.repayments||l.repayments.length===0) return `<div style="text-align:center;padding:16px;font-size:12px;color:var(--t3)">No repayments recorded yet.</div>`;
+  return `<div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:8px;font-weight:600">Payment History</div>
+  ${l.repayments.map((r,i)=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--green)">+${fmtR(r.amount)}</div>
+        <div style="font-size:10px;color:var(--t3)">${r.date} · ${r.method} · Ref: ${r.ref}</div>
+        <div style="font-size:9px;color:var(--t3);margin-top:1px">Recorded by ${r.recorded}</div>
+      </div>
+      <span class="badge b-green">Confirmed</span>
+    </div>`).join('')}
+  <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:12px;border-top:1px solid var(--b);margin-top:4px">
+    <span style="color:var(--t3)">Total paid</span>
+    <span style="font-weight:700;color:var(--green)">${fmtR(l.repaid)}</span>
+  </div>`;
+}
+
+function buildAgreementPanel(l){
+  if(!l.agreement) return `<div style="text-align:center;padding:16px;font-size:12px;color:var(--t3)">No loan agreement on file.</div>`;
+  return `<div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:8px;font-weight:600">Loan Agreement</div>
+  <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+    <span style="font-size:11px;color:var(--t3)">Signed</span>
+    <span class="badge ${l.agreement.signed?'b-green':'b-red'}">${l.agreement.signed?'Signed ✓':'Pending signature'}</span>
+  </div>
+  ${l.agreement.signed?`<div style="font-size:10px;color:var(--t3);margin-bottom:10px">Signed on ${l.agreement.signedDate}</div>`:''}
+  <div style="background:var(--s1);border:1px solid var(--b);border-radius:8px;padding:12px;font-size:11px;color:var(--t2);line-height:1.7">${l.agreement.terms}</div>
+  <div class="btn-row" style="margin-top:10px">
+    <button class="btn btn-ghost btn-sm" onclick="toast('📄 Agreement PDF exported')">Export PDF</button>
+    ${!l.agreement.signed?`<button class="btn btn-gold btn-sm" onclick="confirmAction('Sign loan agreement?','By signing you agree to the terms and repayment schedule.','Sign Agreement',()=>{LOANS.find(x=>x.id==='${l.id}').agreement.signed=true;toast('✅ Agreement signed');renderPage('loans')})">Sign Agreement</button>`:''}
+  </div>`;
+}
+
+function buildRemindersPanel(l, canApprove){
+  const hasPref=l.reminderDay&&l.reminderTime;
+  return `<div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:10px;font-weight:600">WhatsApp Reminder Schedule</div>
+  <div class="alert info"><span class="a-ico">📱</span><div>WhatsApp reminders sent to the member's phone before their instalment is due. Members set their preferred day and time. Treasurer can also send manual reminders at any time.</div></div>
+  <div style="background:var(--s1);border:1px solid var(--b);border-radius:9px;padding:13px;margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+      <span style="font-size:12px;font-weight:700">Auto Reminder</span>
+      <span class="badge ${hasPref?'b-green':'b-muted'}">${hasPref?'Active':'Not set'}</span>
+    </div>
+    ${hasPref?`<div style="font-size:11px;color:var(--t2);margin-bottom:4px">📅 ${l.reminderDay}th of each month at ${l.reminderTime}</div>
+    <div style="font-size:11px;color:var(--t2)">📱 ${l.reminderPhone||'Phone not set'}</div>`:
+    `<div style="font-size:11px;color:var(--t3)">No reminder schedule set for this loan.</div>`}
+  </div>
+  <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);margin-bottom:8px;font-weight:600">Update Reminder Settings</div>
+  <div class="fg2">
+    <div class="fg"><label class="fl">Reminder Day</label>
+      <select class="fi" id="rd-${l.id}" onchange="updateReminder('${l.id}')">
+        ${Array.from({length:28},(_,i)=>`<option value="${i+1}" ${l.reminderDay===i+1?'selected':''}>${i+1}${[1,21].includes(i+1)?'st':[2,22].includes(i+1)?'nd':[3,23].includes(i+1)?'rd':'th'} of each month</option>`).join('')}
+      </select></div>
+    <div class="fg"><label class="fl">Reminder Time</label>
+      <select class="fi" id="rt-${l.id}" onchange="updateReminder('${l.id}')">
+        ${[['07:00','07:00 AM'],['08:00','08:00 AM'],['09:00','09:00 AM'],['10:00','10:00 AM'],['12:00','12:00 PM'],['17:00','05:00 PM'],['18:00','06:00 PM'],['19:00','07:00 PM']].map(([v,lbl])=>`<option value="${v}" ${l.reminderTime===v?'selected':''}>${lbl}</option>`).join('')}
+      </select></div>
+  </div>
+  <div class="fg"><label class="fl">WhatsApp Number</label><input class="fi" type="tel" id="rp-${l.id}" value="${l.reminderPhone||''}" placeholder="+27 82 000 0000" onchange="updateReminder('${l.id}')"></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+    <button class="btn btn-ghost btn-sm" onclick="updateReminder('${l.id}')">💾 Save Settings</button>
+    <button class="btn btn-ghost btn-sm" style="background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3);color:#25D366" onclick="sendLoanWhatsApp('${l.id}','reminder')">📱 Send Now</button>
+    ${canApprove?`<button class="btn btn-ghost btn-sm" style="background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3);color:#25D366" onclick="sendLoanWhatsApp('${l.id}','statement')">📊 Send Statement</button>`:''}
+  </div>`;
+}
+
+function loanTab(loanId, tabIdx){
+  for(let i=0;i<4;i++){
+    const tab=document.getElementById(`ltab-${loanId}-${i}`);
+    const panel=document.getElementById(`lpanel-${loanId}-${i}`);
+    if(tab){tab.style.borderBottom=i===tabIdx?'2px solid var(--g)':'2px solid transparent';tab.style.color=i===tabIdx?'var(--g)':'var(--t3)';}
+    if(panel)panel.style.display=i===tabIdx?'block':'none';
+  }
+}
+
+function updateReminder(loanId){
+  const loan=LOANS.find(l=>l.id===loanId);if(!loan)return;
+  const day=parseInt(document.getElementById(`rd-${loanId}`)?.value)||loan.reminderDay;
+  const time=document.getElementById(`rt-${loanId}`)?.value||loan.reminderTime;
+  const phone=document.getElementById(`rp-${loanId}`)?.value||loan.reminderPhone;
+  loan.reminderDay=day;loan.reminderTime=time;loan.reminderPhone=phone;
+  AUDIT_LOG.unshift({who:curUser.nick,action:`Updated loan reminder for ${loan.member} — ${day}th at ${time}`,when:new Date().toLocaleDateString('en-ZA')});
+  toast(`✅ Reminder set — ${day}th of each month at ${time}`);
+}
+
+function openRecordRepayment(loanId){
+  const loan=LOANS.find(l=>l.id===loanId);if(!loan)return;
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-title">Record Repayment</div>
+    <div class="modal-sub">${loan.member} · Outstanding: ${fmtR(loan.total-loan.repaid)}</div>
+    <div class="fg2">
+      <div class="fg"><label class="fl">Amount (R)</label><input class="fi" type="number" id="rr-amt" value="${Math.ceil((loan.total-loan.repaid)/Math.max(1,10-(loan.repayments?.length||0)))}" placeholder="Amount"></div>
+      <div class="fg"><label class="fl">Method</label><select class="fi" id="rr-meth"><option>EFT</option><option>SnapScan</option><option>Cash</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">Bank Reference</label><input class="fi" id="rr-ref" placeholder="e.g. PAKO MAR 2026"></div>
+    <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="rr-date" value="${new Date().toISOString().split('T')[0]}"></div>
+    <div class="alert info"><span class="a-ico">ⓘ</span><div>Recording this payment will update the loan balance and audit trail. A WhatsApp confirmation can be sent to the member.</div></div>
+    <div class="modal-acts">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-ghost" style="background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3);color:#25D366" onclick="confirmAndSendWA=true;recordLoanPayment('${loanId}')">Record + WhatsApp</button>
+      <button class="btn btn-gold" onclick="confirmAndSendWA=false;recordLoanPayment('${loanId}')">✓ Record</button>
+    </div>`;
+  document.getElementById('modalBg').classList.add('on');
+}
+
+let confirmAndSendWA=false;
+function recordLoanPayment(loanId){
+  const loan=LOANS.find(l=>l.id===loanId);if(!loan)return;
+  const amt=parseInt(document.getElementById('rr-amt')?.value)||0;
+  const meth=document.getElementById('rr-meth')?.value||'EFT';
+  const ref=document.getElementById('rr-ref')?.value||'manual';
+  const date=document.getElementById('rr-date')?.value||new Date().toLocaleDateString('en-ZA');
+  if(amt<=0){toast('⚠ Enter a valid amount');return;}
+  if(!loan.repayments)loan.repayments=[];
+  loan.repayments.push({date,amount:amt,method:meth,ref,recorded:`${curUser.nick} (${curUser.roleLabel})`});
+  loan.repaid+=amt;
+  if(loan.repaid>=loan.total){loan.repaid=loan.total;loan.status='repaid';}
+  AUDIT_LOG.unshift({who:curUser.nick+'('+curUser.roleLabel+')',action:`Recorded repayment ${fmtR(amt)} for loan ${loanId} — ${loan.member} · Ref: ${ref}`,when:new Date().toLocaleDateString('en-ZA')});
+  closeModal();
+  if(confirmAndSendWA){
+    const remaining=loan.total-loan.repaid;
+    const msg=`The Bafana's Stokvel\n\n✅ Payment Confirmed\n\nHi ${loan.member.split(' ')[0]},\n\nWe've received your loan repayment of ${fmtR(amt)} on ${date}.\n\nLoan Summary:\n• Principal: ${fmtR(loan.principal)}\n• Total due: ${fmtR(loan.total)}\n• Paid to date: ${fmtR(loan.repaid)}\n• Remaining: ${fmtR(remaining)}\n\n${remaining<=0?'✅ Your loan is fully repaid! Thank you.':'Please ensure the remaining balance is settled by 30 November.'}\n\nRef: ${ref}`;
+    window.open('https://wa.me/'+loan.reminderPhone.replace(/\s+/g,'').replace('+','')+'?text='+encodeURIComponent(msg),'_blank');
+  }
+  toast(`✅ ${fmtR(amt)} recorded for ${loan.member}${loan.status==='repaid'?' — loan fully repaid!':''}`);
+  renderPage('loans');
+}
+
+function sendLoanWhatsApp(loanId, type){
+  const loan=LOANS.find(l=>l.id===loanId);if(!loan)return;
+  const phone=(loan.reminderPhone||'').replace(/\s+/g,'').replace('+','');
+  const outstanding=loan.total-loan.repaid;
+  const msgs={
+    reminder:`The Bafana's Stokvel\n\n📅 Loan Repayment Reminder\n\nHi ${loan.member.split(' ')[0]},\n\nThis is your monthly reminder that your loan instalment is due.\n\nLoan Details:\n• Original loan: ${fmtR(loan.principal)}\n• Total due: ${fmtR(loan.total)}\n• Outstanding: ${fmtR(outstanding)}\n\nPlease make payment to:\nNedbank Savings\nAccount: 2031834045\nBranch: 117134\nReference: ${loan.member.split(' ')[0].toUpperCase()} LOAN\n\nContact Solomon or Karabo to confirm payment.`,
+    overdue:`The Bafana's Stokvel\n\n⚠️ OVERDUE LOAN NOTICE\n\nHi ${loan.member.split(' ')[0]},\n\nYour loan repayment of ${fmtR(outstanding)} is OVERDUE.\n\nThe repayment deadline of ${loan.due} has passed.\n\nPlease make immediate payment or contact Solomon (Chairperson) to discuss a repayment arrangement. Continued non-payment will result in deduction from your annual payout.\n\nNedbank Savings · 2031834045 · Branch 117134`,
+    statement:`The Bafana's Stokvel\n\n📊 Loan Statement\n\nMember: ${loan.member}\nLoan Ref: ${loan.id}\nIssued: ${loan.issued}\nPrincipal: ${fmtR(loan.principal)}\nInterest (${loan.rate}%): ${fmtR(loan.total-loan.principal)}\nTotal Due: ${fmtR(loan.total)}\nPaid to Date: ${fmtR(loan.repaid)}\nOutstanding: ${fmtR(outstanding)}\nDue Date: ${loan.due}\nStatus: ${loan.status.toUpperCase()}\n\nRepayments: ${(loan.repayments||[]).map(r=>`${r.date} ${fmtR(r.amount)}`).join(', ')||'None recorded'}`,
+  };
+  if(!phone){toast('⚠ No WhatsApp number set for this loan — update in Reminder Settings');return;}
+  window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msgs[type]||msgs.reminder),'_blank');
+  AUDIT_LOG.unshift({who:curUser.nick,action:`Sent WhatsApp ${type} to ${loan.member} for loan ${loanId}`,when:new Date().toLocaleDateString('en-ZA')});
+}
+
+function openLoanDetail(loanId){
+  const loan=LOANS.find(l=>l.id===loanId);if(!loan)return;
+  // Scroll to the loan card and open reminders tab
+  const card=document.getElementById(`lcard-${loanId}`);
+  if(card){card.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>loanTab(loanId,3),300);}
 }
 
 function loanAmtCheck(input){document.getElementById('loanVoteWarn').style.display=parseInt(input.value)>10000?'block':'none';}
 function submitLoan(){
   const amt=parseInt(document.getElementById('lAmt')?.value)||0;
+  const day=parseInt(document.getElementById('lReminderDay')?.value)||15;
+  const time=document.getElementById('lReminderTime')?.value||'09:00';
+  const phone=document.getElementById('lPhone')?.value||curUser.phone;
   if(amt>maxLoan()){toast(`⚠ Amount exceeds maximum ${fmtR(maxLoan())}`);return;}
-  if(amt>10000){confirmAction('This loan requires a member vote',`${fmtR(amt)} exceeds R10,000. A vote will be opened automatically (§17).`,'Submit & Open Vote',()=>{AUDIT_LOG.unshift({who:curUser.nick,action:`Submitted loan request ${fmtR(amt)} — vote triggered (>R10k)`,when:new Date().toLocaleDateString('en-ZA')});toast('✅ Loan submitted — member vote opened')});}
-  else{AUDIT_LOG.unshift({who:curUser.nick,action:`Submitted loan request ${fmtR(amt)} — pending Chairperson approval`,when:new Date().toLocaleDateString('en-ZA')});toast('✅ Loan request submitted for approval');}
-}
-
-function viewLoanSchedule(loanId){
-  const loan=LOANS.find(l=>l.id===loanId);if(!loan)return;
-  // Generate simple repayment schedule
-  const months=['Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026'];
-  const monthlyPayment=Math.ceil((loan.total-loan.repaid)/months.length);
-  let running=loan.repaid;
-  document.getElementById('modalBody').innerHTML=`
-    <div class="modal-title">Repayment Schedule</div>
-    <div class="modal-sub">${loan.member} · ${fmtR(loan.principal)} loan · ${loan.rate}% interest · Due 30 Nov</div>
-    <div style="background:var(--s2);border-radius:9px;padding:12px;margin-bottom:14px">
-      ${months.map((mo,i)=>{
-        const paid=running>=loan.total;
-        const isThis=i===0;
-        const cls=paid?'past':isThis?'due':'';
-        const thisAmt=Math.min(monthlyPayment,loan.total-running);
-        if(!paid)running+=thisAmt;
-        return`<div class="amort-row ${cls}">
-          <span style="font-weight:600;width:80px">${mo}</span>
-          <span style="color:var(--t3)">${paid?'✓ Paid':isThis?'⚡ DUE NOW':'Upcoming'}</span>
-          <span style="font-weight:700;color:${paid?'var(--green)':isThis?'var(--amber)':'var(--t)'}">${paid?fmtR(0):fmtR(thisAmt)}</span>
-        </div>`;
-      }).join('')}
-      <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:12px;font-weight:700;border-top:1px solid var(--b);margin-top:4px"><span>Remaining balance</span><span style="color:var(--red)">${fmtR(loan.total-loan.repaid)}</span></div>
-    </div>
-    <div class="modal-acts"><button class="btn btn-ghost" onclick="closeModal()">Close</button><button class="btn btn-gold" onclick="toast('📄 Schedule exported');closeModal()">Export PDF</button></div>`;
-  document.getElementById('modalBg').classList.add('on');
+  const newLoan={
+    id:'L'+String(Date.now()).slice(-4),member:curUser.name,memberId:curUser.id,
+    init:curUser.init,color:curUser.color,principal:amt,issued:new Date().toLocaleDateString('en-ZA'),
+    rate:35,total:Math.round(amt*1.35),repaid:0,status:'pending_approval',type:'personal',
+    due:'30 Nov 2026',reminderDay:day,reminderTime:time,reminderPhone:phone,repayments:[],
+    agreement:{signed:false,signedDate:null,terms:`${fmtR(amt)} personal loan at 35% interest. Total due ${fmtR(Math.round(amt*1.35))}. Repayment by 30 November 2026. Member guarantees repayment. WhatsApp reminders set for the ${day}th of each month at ${time}.`}
+  };
+  if(amt>10000){
+    confirmAction('This loan requires a member vote',`${fmtR(amt)} exceeds R10,000. A vote will be opened automatically (§17).`,'Submit & Open Vote',()=>{
+      LOANS.push(newLoan);
+      AUDIT_LOG.unshift({who:curUser.nick,action:`Submitted loan request ${fmtR(amt)} — vote triggered (>R10k). Reminder set: ${day}th at ${time}`,when:new Date().toLocaleDateString('en-ZA')});
+      toast('✅ Loan submitted — member vote opened');renderPage('loans');
+    });
+  } else {
+    LOANS.push(newLoan);
+    AUDIT_LOG.unshift({who:curUser.nick,action:`Submitted loan request ${fmtR(amt)} — pending Chairperson approval. Reminder set: ${day}th at ${time}`,when:new Date().toLocaleDateString('en-ZA')});
+    toast('✅ Loan request submitted — WhatsApp reminders set');renderPage('loans');
+  }
 }
 
 /* ═══════ PAGE: FINES ════════════════════════════════════════ */
